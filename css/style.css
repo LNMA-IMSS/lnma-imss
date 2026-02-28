@@ -1,0 +1,757 @@
+/* ============================================================
+   LNMA-IMSS — Stylesheet — Following Mockup Exactly
+   White background throughout. Clean. Noto Sans.
+   ============================================================ */
+
+:root {
+  --color-primary:     #006847;
+  --color-text:        #333;
+  --color-text-light:  #555;
+  --color-text-muted:  #888;
+  --color-bg:          #ffffff;
+  --color-border:      #ddd;
+  --font-main:         'Noto Sans', sans-serif;
+  --max-width:         960px;
+  --nav-h:             44px;
+  --fs-body:           13px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 14px;
+  scroll-behavior: smooth;
+  scroll-padding-top: calc(var(--nav-h) + 8px);
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--color-text); text-decoration: none; }
+a:hover { color: var(--color-primary); }
+
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- Scroll Reveal --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.reveal.revealed { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   HEADER — center-aligned vertically, more whitespace
+   ============================================================ */
+.site-header { background: var(--color-bg); }
+
+.header-inner {
+  display: flex;
+  align-items: center;          /* vertically centered */
+  justify-content: space-between;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 20px 20px 16px;     /* more top/bottom margin */
+}
+
+.header-left a { display: block; line-height: 0; }
+.header-left img { height: 54px; width: auto; }    /* slightly bigger */
+.header-right img { height: 76px; width: auto; }
+
+/* ============================================================
+   NAV — white bg, right-aligned
+   ============================================================ */
+.site-nav {
+  background: var(--color-bg);
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+  height: var(--nav-h);
+  gap: 6px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  height: 100%;
+}
+.nav-links li { height: 100%; }
+
+.nav-links a {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 18px;
+  font-size: var(--fs-body);
+  font-weight: 400;
+  color: var(--color-text);
+  transition: color 0.2s;
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--color-primary); }
+
+.lang-toggle {
+  display: flex;
+  margin-left: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.lang-toggle button {
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-main);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 7px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-toggle button.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.nav-burger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  width: 30px;
+  height: 30px;
+  position: relative;
+}
+.nav-burger span {
+  display: block; width: 18px; height: 2px;
+  background: var(--color-text);
+  position: absolute; left: 6px;
+  transition: all 0.2s;
+}
+.nav-burger span:nth-child(1) { top: 7px; }
+.nav-burger span:nth-child(2) { top: 14px; }
+.nav-burger span:nth-child(3) { top: 21px; }
+.nav-burger.open span:nth-child(1) { top: 14px; transform: rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { top: 14px; transform: rotate(-45deg); }
+
+/* ============================================================
+   CAROUSEL
+   ============================================================ */
+.carousel-section {
+  position: relative;
+  width: 100%;
+  background: #111;
+}
+
+.carousel-viewport {
+  position: relative;
+  width: 100%;
+  /* Landscape/desktop: full 16:9 image, width = 100vw, height proportional */
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+.carousel-slide {
+  position: absolute; inset: 0;
+  opacity: 0;
+  z-index: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+.carousel-slide.active { opacity: 1; z-index: 1; }
+.carousel-slide.fade-out { opacity: 0; z-index: 1; transition: opacity 1.2s ease-in-out; }
+
+.carousel-slide img,
+.carousel-slide video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;             /* landscape: image ratio ≈ viewport ratio → minimal/no crop */
+  object-position: center center;
+}
+
+.carousel-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(145deg, #1a2e1a 0%, #0d1f2d 50%, #1a1a2e 100%);
+}
+
+/* --- Portrait pan animation (left → right with fade-out at end) --- */
+@keyframes panLeftToRight {
+  0%   { object-position: 0% center; opacity: 1; }
+  85%  { object-position: 100% center; opacity: 1; }
+  100% { object-position: 100% center; opacity: 0; }
+}
+
+/* Caption overlay — ONE image, two text columns */
+.carousel-caption-overlay {
+  position: absolute;
+  bottom: 28px;
+  left: 0; right: 0;
+  z-index: 5;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.carousel-caption-row {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* Single square thumbnail with rounded corners */
+.carousel-caption-thumb {
+  width: 70px;
+  height: 70px;
+  border-radius: 6px;        /* square with rounded corners */
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+}
+.carousel-caption-thumb img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.carousel-caption-cols {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 300px);
+  gap: 20px;
+  min-width: 0;
+}
+
+.carousel-caption-cols p {
+  color: rgba(255,255,255,0.75);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 300px;            /* ~55 chars/line at 11px Noto Sans */
+}
+
+/* Dots — centered at bottom */
+.carousel-dots-bar {
+  position: absolute;
+  bottom: 6px;
+  left: 0; right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+.carousel-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.carousel-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  border: none; cursor: pointer; padding: 0;
+  transition: all 0.3s;
+}
+.carousel-dot.active {
+  background: #fff;
+  width: 18px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   SECTIONS
+   ============================================================ */
+.section {
+  padding: 40px 0;
+  background: var(--color-bg);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 20px;
+}
+
+/* ============================================================
+   NOSOTROS — consistent font size throughout
+   ============================================================ */
+.about-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+.about-two-col p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.mv-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+.mv-grid h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+.mv-grid p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.7;
+  text-align: justify;
+}
+
+.staff-section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 20px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #eee;
+}
+
+.staff-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+.staff-member {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Top row: photo + name/links side by side */
+.staff-member-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+  min-height: 140px;       /* ensures both columns' bios start at the same level */
+}
+
+/* Square photo with rounded corners */
+.staff-photo {
+  width: 90px;
+  height: 110px;
+  border-radius: 4px;          /* square with slight rounding */
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #ddd;
+}
+.staff-photo img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.staff-name-links h4 {
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.staff-links a {
+  display: block;
+  font-size: var(--fs-body);
+  color: var(--color-primary);
+  line-height: 1.6;
+}
+.staff-links a:hover { text-decoration: underline; }
+
+/* Bio below the top row */
+.staff-bio p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.6;
+  margin-bottom: 6px;
+}
+
+/* ============================================================
+   EQUIPMENT — consistent font size, plain grid
+   ============================================================ */
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.equipment-item { cursor: pointer; }
+
+.equipment-item-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #d4d4d4;
+  margin-bottom: 5px;
+}
+.equipment-item-image img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+
+.equipment-item-name {
+  font-size: var(--fs-body);     /* same as body text */
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   MODAL — bullet points instead of checkmarks
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+.modal {
+  background: #fff; border-radius: 4px;
+  max-width: 580px; width: 100%; max-height: 85vh; overflow-y: auto;
+  transform: translateY(10px); transition: transform 0.3s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+
+.modal-header {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #e0e0e0;
+}
+.modal-header img { width: 100%; height: 100%; object-fit: cover; }
+
+.modal-close {
+  position: absolute; top: 8px; right: 8px;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: none; background: rgba(0,0,0,0.5); color: #fff;
+  font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; z-index: 1;
+}
+.modal-close:hover { background: rgba(0,0,0,0.8); }
+
+.modal-body { padding: 16px 20px 20px; }
+.modal-body h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+.modal-body .description {
+  font-size: var(--fs-body); color: var(--color-text-light);
+  line-height: 1.7; margin-bottom: 14px;
+}
+
+.modal-specs h4 {
+  font-size: 12px; font-weight: 700;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.modal-specs ul {
+  list-style: disc;                /* bullet points */
+  padding-left: 18px;
+}
+.modal-specs li {
+  font-size: var(--fs-body);
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+/* ============================================================
+   POLICIES — Políticas de reconocimiento
+   ============================================================ */
+.policies-intro p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.7;
+  text-align: justify;
+}
+.policies-intro a,
+.policies-registry a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.policies-intro a:hover,
+.policies-registry a:hover {
+  color: var(--color-accent);
+}
+
+.policies-document {
+  margin: 28px 0;
+}
+.policies-document h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 12px;
+}
+
+.pdf-embed-wrapper {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.pdf-embed {
+  width: 100%;
+  height: 600px;
+  border: none;
+  display: block;
+}
+
+.pdf-download-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--color-primary);
+}
+.pdf-download-link:hover {
+  color: var(--color-accent);
+}
+
+.policies-notices {
+  margin: 24px 0;
+}
+.policies-notices p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.7;
+  text-align: justify;
+  margin-bottom: 14px;
+}
+
+.policies-registry {
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: #f7f7f7;
+  border-left: 3px solid var(--color-primary);
+  border-radius: 2px;
+}
+.policies-registry p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ============================================================
+   CONTACT — map 100% viewport width, rest contained
+   ============================================================ */
+.contact-map-wrapper {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+}
+
+.contact-map {
+  width: 100%;
+  height: 360px;
+  border: none;
+  display: block;
+}
+
+.contact-lab-title {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-text);
+  margin: 24px 0 18px;
+  padding-bottom: 0;
+}
+
+.contact-two-col {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 40px;
+  justify-content: center;
+  margin: 0 auto;
+}
+.contact-two-col p {
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  line-height: 1.7;
+}
+.contact-two-col a { color: var(--color-primary); }
+
+/* ============================================================
+   FOOTER
+   Desktop: single row — Maza left-aligned, logos centered
+   Mobile: stacked — logos on top, Maza below
+   ============================================================ */
+.site-footer {
+  background: var(--color-bg);
+  padding: 28px 0 24px;
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;          /* for absolute positioning of Maza on desktop */
+  min-height: 80px;
+}
+
+.footer-left {
+  position: absolute;
+  left: 20px;
+}
+.footer-left img { height: 70px; width: auto; }
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+}
+.footer-logos a { display: block; line-height: 0; }
+.footer-logos img { height: 65px; width: auto; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  /* Mobile menu: push-down (not overlay) */
+  .nav-burger { display: block; }
+  .nav-links {
+    display: none;
+    width: 100%;
+    order: 10;
+    flex-direction: column;
+    background: #fff;
+    border-bottom: 1px solid #eee;
+  }
+  .nav-links.open { display: flex; }
+  .nav-links li { height: auto; }
+  .nav-links a { padding: 10px 20px; }
+
+  .nav-inner {
+    flex-wrap: wrap;
+  }
+
+  /* Sections single-column */
+  .about-two-col, .mv-grid, .staff-grid, .contact-two-col {
+    grid-template-columns: 1fr;
+  }
+  .equipment-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .carousel-caption-cols { grid-template-columns: 1fr; }
+
+  .header-left img { height: 38px; }
+  .header-right img { height: 58px; }
+
+  .staff-member-top { min-height: auto; }
+
+  .contact-two-col { max-width: 100%; }
+
+  /* PDF embed shorter on mobile */
+  .pdf-embed { height: 400px; }
+
+  /* Footer mobile: stacked — logos first, Maza below, centered */
+  .footer-inner {
+    flex-direction: column;
+    position: static;
+    gap: 16px;
+  }
+  .footer-left {
+    position: static;
+    order: 2;
+  }
+  .footer-logos { order: 1; }
+}
+
+/* Portrait: carousel fills viewport height, image pans left → right with fade-out */
+@media (max-width: 768px) and (orientation: portrait) {
+  .carousel-viewport {
+    aspect-ratio: auto;
+    height: 100svh;
+  }
+  .carousel-slide img,
+  .carousel-slide video {
+    object-fit: cover;
+    object-position: 0% center;
+  }
+  .carousel-slide.active img,
+  .carousel-slide.active video {
+    animation: panLeftToRight var(--slide-duration, 5s) linear forwards;
+  }
+
+  /* Captions: visible, stacked single column with gradient backdrop */
+  .carousel-caption-overlay {
+    display: block;
+    bottom: 30px;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+    padding-top: 40px;
+    padding-bottom: 8px;
+  }
+  .carousel-caption-row {
+    padding: 0 16px;
+    gap: 10px;
+  }
+  .carousel-caption-thumb {
+    width: 54px;
+    height: 54px;
+  }
+  .carousel-caption-cols {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .carousel-caption-cols p {
+    max-width: none;             /* full available width */
+    font-size: 11px;
+  }
+}
+
+/* Landscape mobile: proportional 16:9 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .carousel-viewport {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.carousel-empty {
+  background: linear-gradient(145deg, #1a2e1a 0%, #0d1f2d 50%, #1a1a2e 100%);
+  aspect-ratio: 16 / 9;
+}
+
+/* Contact section — no top padding, map breaks out */
+#contacto.section {
+  padding-top: 0;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
