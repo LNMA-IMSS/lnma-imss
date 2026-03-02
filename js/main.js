@@ -495,8 +495,11 @@
       </div>
     `).join('');
 
+    const equipTitle = currentLang === 'es' ? 'Equipo' : 'Equipment';
+
     section.innerHTML = `
       <div class="container">
+        <h2 class="section-title reveal">${equipTitle}</h2>
         <div class="equipment-grid">
           ${itemsHTML}
         </div>
@@ -553,6 +556,8 @@
     const d = policiesData;
 
     const downloadLabel = currentLang === 'es' ? 'Descargar documento' : 'Download document';
+    const pdfUrl = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/') + d.guidelinesDocument;
+    const viewerUrl = 'https://docs.google.com/gview?url=' + encodeURIComponent(pdfUrl) + '&embedded=true';
 
     section.innerHTML = `
       <div class="container">
@@ -566,7 +571,7 @@
           <h3>${t(d.guidelinesCaption)}</h3>
           <div class="pdf-embed-wrapper">
             <iframe
-              src="${d.guidelinesDocument}"
+              src="${viewerUrl}"
               class="pdf-embed"
               title="${t(d.guidelinesCaption)}"
               loading="lazy">
@@ -636,6 +641,7 @@
         <div class="footer-logos">${logosHTML}</div>
         <div class="footer-left"><img src="${cfg.leftImage}" alt="${cfg.leftAlt}"></div>
       </div>
+      <div class="footer-copyright">© 2026, Laboratorio Nacional de Microscopía Avanzada-IMSS</div>
     `;
   }
 
