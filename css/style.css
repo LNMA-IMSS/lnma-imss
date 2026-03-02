@@ -657,22 +657,31 @@ a:hover { color: var(--color-primary); }
    RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
-  /* Mobile menu: horizontal wrap, push-down */
+  /* Mobile menu: horizontal wrap, push-down, evenly spaced */
   .nav-burger { display: block; }
+
+  .nav-inner {
+    flex-wrap: wrap;
+    height: auto;                /* let nav grow with wrapped menu rows */
+    min-height: var(--nav-h);
+  }
+
   .nav-links {
     display: none;
     width: 100%;
     order: 10;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-evenly;
     background: #fff;
     border-bottom: 1px solid #eee;
     padding: 6px 0;
+    list-style: none;
   }
   .nav-links.open { display: flex; }
   .nav-links li { height: auto; }
   .nav-links a {
-    padding: 8px 16px;
+    padding: 10px 14px;
     font-size: 13px;
     white-space: nowrap;
   }
