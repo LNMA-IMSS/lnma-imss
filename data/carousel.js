@@ -3,19 +3,20 @@ const CAROUSEL_DATA = {
   "slides": [
     {
       "id": "slide-01",
-      "image": "",
+      "image": "assets/images/carousel/slide-01.jpg",
       "captionLeft": {
-        "es": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text",
-        "en": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text"
+        "es": "El Laboratorio de Microscopía en sus inicios, a fines del 2015. Fotos: Vadim Pérez.",
+        "en": "How it all started. The Laboratory of Microscopy back in 2015. Photos: Vadim Pérez."
       },
       "captionRight": {
-        "es": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text",
-        "en": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text"
+        "es": "",
+        "en": ""
       },
       "description": {
         "es": "",
         "en": ""
-      }
+      },
+      "thumbnail": "assets/images/carousel/slide-01-thumb.jpg"
     }
   ]
 };
