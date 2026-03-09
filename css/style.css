@@ -204,6 +204,15 @@ a:hover { color: var(--color-primary); }
   100% { object-position: 100% center; opacity: 0; }
 }
 
+/* Single-slide loop: pan, fade out, snap back, fade in */
+@keyframes panLeftToRightLoop {
+  0%   { object-position: 0% center; opacity: 1; }
+  80%  { object-position: 100% center; opacity: 1; }
+  90%  { object-position: 100% center; opacity: 0; }
+  91%  { object-position: 0% center; opacity: 0; }
+  100% { object-position: 0% center; opacity: 1; }
+}
+
 /* Caption overlay — ONE image, two text columns */
 .carousel-caption-overlay {
   position: absolute;
@@ -456,7 +465,7 @@ a:hover { color: var(--color-primary); }
 
 .modal-header {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   background: #e0e0e0;
 }
@@ -741,6 +750,12 @@ a:hover { color: var(--color-primary); }
   .carousel-slide.active img,
   .carousel-slide.active video {
     animation: panLeftToRight var(--slide-duration, 5s) linear forwards;
+  }
+
+  /* Single slide: infinite loop with fade-in/out at edges */
+  .carousel-viewport.single-slide .carousel-slide.active img,
+  .carousel-viewport.single-slide .carousel-slide.active video {
+    animation: panLeftToRightLoop var(--slide-duration, 5s) linear infinite;
   }
 
   /* Captions: visible, stacked single column with gradient backdrop */
