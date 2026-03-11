@@ -3,7 +3,7 @@ const CAROUSEL_DATA = {
   "slides": [
     {
       "id": "slide-01",
-      "image": "",
+      "image": "assets/images/carousel/slide-01.jpg",
       "captionLeft": {
         "es": "El Laboratorio de Microscopía en sus inicios, a fines del 2015. Fotos: Vadim Pérez.",
         "en": "How it all started. The Laboratory of Microscopy back in 2015. Photos: Vadim Pérez."
@@ -15,12 +15,13 @@ const CAROUSEL_DATA = {
       "description": {
         "es": "",
         "en": ""
-      }
+      },
+      "thumbnail": "assets/images/carousel/slide-01-thumb.jpg"
     },
     {
       "id": "slide-02",
-      "image": "",
-      "thumbnail": "",
+      "image": "assets/images/carousel/slide-02.jpg",
+      "thumbnail": "assets/images/carousel/slide-02-thumb.jpg",
       "title": {
         "es": "",
         "en": ""
