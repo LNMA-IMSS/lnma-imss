@@ -3,7 +3,7 @@ const CAROUSEL_DATA = {
   "slides": [
     {
       "id": "slide-01",
-      "image": "assets/images/carousel/slide-01.jpg",
+      "image": "",
       "captionLeft": {
         "es": "El Laboratorio de Microscopía en sus inicios, a fines del 2015. Fotos: Vadim Pérez.",
         "en": "How it all started. The Laboratory of Microscopy back in 2015. Photos: Vadim Pérez."
@@ -15,13 +15,12 @@ const CAROUSEL_DATA = {
       "description": {
         "es": "",
         "en": ""
-      },
-      "thumbnail": "assets/images/carousel/slide-01-thumb.jpg"
+      }
     },
     {
       "id": "slide-02",
-      "image": "assets/images/carousel/slide-02.jpg",
-      "thumbnail": "assets/images/carousel/slide-02-thumb.jpg",
+      "image": "",
+      "thumbnail": "",
       "title": {
         "es": "",
         "en": ""
@@ -41,6 +40,31 @@ const CAROUSEL_DATA = {
       "captionRight": {
         "es": "meduloblastomas cada uno con diferentes características clínicas, alteraciones genéticas, respuesta al tratamiento y pronóstico de la enfermedad. Foto: cortersía Dra. Lourdes Álvarez, HIMFG",
         "en": "with distinct clinical characteristics, genetic alterations, treatment response, and disease prognosis. Photo: courtesy of Dr. Lourdes Álvarez, HIMFG."
+      }
+    },
+    {
+      "id": "slide-03",
+      "image": "assets/images/carousel/slide-03.jpg",
+      "thumbnail": "assets/images/carousel/slide-03-thumb.jpg",
+      "title": {
+        "es": "",
+        "en": ""
+      },
+      "subtitle": {
+        "es": "LNMA, IMSS",
+        "en": "LNMA, IMSS"
+      },
+      "description": {
+        "es": "Amanecer at CMN Siglo XXI",
+        "en": "Sunrise at the NMC Siglo XXI"
+      },
+      "captionLeft": {
+        "es": "Amaneceres en el Centro Médico Nacional Siglo XXI. Foto: Dr. Vadim Pérez, 2016.",
+        "en": "Sunrises at the National Medical Center Siglo XXI. Photo: Dr. Vadim Pérez, 2016."
+      },
+      "captionRight": {
+        "es": "",
+        "en": ""
       }
     }
   ]
