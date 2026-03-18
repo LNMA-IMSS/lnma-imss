@@ -259,7 +259,8 @@
             "Detector: DS-Fi3 5.9MP Color CMOS Camera (does not allow channel separation)",
             "Applications: observation and brightfield photography of samples"
           ]
-        }
+        },
+        "visible": false
       },
       {
         "id": "escaner-kfbio-cc-fl",
@@ -296,6 +297,33 @@
             "<u><a href=\"https://kfbiopathology.com/kf-fl-series/kf-fl-400/\" target=\"_blank\">Description</a></u>"
           ]
         }
+      },
+      {
+        "id": "equip-vcq5me5j",
+        "category": "microscopy",
+        "name": {
+          "es": "Sistema multiplex Lunaphore COMET",
+          "en": "Multiplex system Lunaphore COMET"
+        },
+        "image": "",
+        "_imageData": null,
+        "popupImage": "",
+        "_popupImageData": null,
+        "shortDescription": {
+          "es": "Sistema de inmunofluorescencia multiplex Lunaphore COMET",
+          "en": "Multiplex spatial biology imaging system Lunaphore COMET"
+        },
+        "fullDescription": {
+          "es": "COMET es una plataforma automatizada de inmunofluorescencia multiplex para biología espacial.\nRealiza ciclos secuenciales de tinción, adquisición de imágenes y eliminación de anticuerpos en la misma muestra. Permite el análisis de proteínas y ARN manteniendo el contexto espacial del tejido.",
+          "en": "COMET is a fully automated multiplex immunofluorescence platform for spatial biology.\nIt performs sequential staining, imaging, and antibody removal on the same tissue section.\nThe system enables high-plex protein and RNA analysis while preserving spatial context."
+        },
+        "specs": {
+          "es": [],
+          "en": []
+        },
+        "_specsTextEs": "Permite hasta ~40 marcadores por lámina mediante ciclos secuenciales de doble detección (~20 ciclos)\n\nFlujo de trabajo completamente automatizado que integra tinción, imagen y preprocesamiento\n\nCapacidad de hasta 4 láminas simultáneamente con procesos paralelizados\n\nTiempo típico de corrida completa de ~24 horas con alta reproducibilidad\n\nÁrea de imagen de hasta ~12.5 × 12.5 mm con resolución subcelular (~0.28 µm/píxel)",
+        "_specsTextEn": "Up to ~40 markers per slide using sequential dual-plex cycles (≈20 cycles).\nAutomated workflow integrating staining, imaging, and image preprocessing.\nUp to 4 slides simultaneously with parallelized staining and imaging.\nTypical full run completed within ~24 hours.\nImaging area up to ~12.5 × 12.5 mm with subcellular resolution (~0.28 µm/pixel).",
+        "visible": true
       },
       {
         "id": "escaner-leica-aperio-fl",
