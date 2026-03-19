@@ -7,12 +7,12 @@ const CONTENT_DATA = {
     "en": "About Us"
   },
   "introLeft": {
-    "es": "El Laboratorio Nacional de Microscopía Avanzada-IMSS (LNMA-IMSS) es un fruto de la colaboración entre el Instituto Mexicano del Seguro Social y la Universidad Nacional Autónoma de México. El LNMA-IMSS funciona en la modalidad de \"core facility\" ofreciendo servicios y asistencia en la preparación de muestras (cortes de tejido en",
-    "en": "The National Laboratory of Advanced Microscopy-IMSS (LNMA-IMSS) is a collaboration between the Mexican Institute of Social Security and the National Autonomous University of Mexico. LNMA-IMSS operates as a core facility offering services and assistance in sample preparation (fresh or paraffin-embedded tissue sections, tissue"
+    "es": "El Laboratorio Nacional de Microscopía Avanzada-IMSS (LNMA-IMSS) es un fruto de la colaboración entre el Instituto Mexicano del Seguro Social y la Universidad Nacional Autónoma de México. El LNMA-IMSS funciona en la modalidad de \"core facility\" ofreciendo servicios y asistencia en la preparación de muestras (cortes de tejido en fresco o incluido en para-",
+    "en": "The National Laboratory of Advanced Microscopy-IMSS (LNMA-IMSS) is a collaboration between the Mexican Institute of Social Security and the National Autonomous University of Mexico. LNMA-IMSS operates as a core facility offering services and assistance in sample preparation (fresh or paraffin-embedded tissue sections, tissue clearing, labeling and stain-"
   },
   "introRight": {
-    "es": "fresco o incluido en parafina, clarificación de tejidos, marcaje y tinciones), visualización de la muestra viva o fijada utilizando técnicas de microscopía de campo claro, epifluorescencia y confocal, así como la captura de imágenes y videos, y la reconstrucción de la estructura tridimensional de la muestra, en función de las necesidades del usuario.",
-    "en": "clearing, labeling and staining), visualization of live or fixed samples using brightfield, epifluorescence and confocal microscopy techniques, as well as image and video capture, and three-dimensional reconstruction of the sample, according to user needs."
+    "es": "fina, clarificación de tejidos, marcaje y tinciones), visualización de la muestra viva o fijada utilizando técnicas de microscopía de campo claro, epifluorescencia y confocal, así como la captura de imágenes y videos, y la reconstrucción de la estructura tridimensional de la muestra, en función de las necesidades del usuario.",
+    "en": "ing), visualization of live or fixed samples using brightfield, epifluorescence and confocal microscopy techniques, as well as image and video capture, and three-dimensional reconstruction of the sample, according to user needs."
   },
   "mission": {
     "title": {
