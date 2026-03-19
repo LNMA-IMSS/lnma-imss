@@ -1,3 +1,6 @@
+/* ============================================================
+   ABOUT SECTION — Mission, Vision, Staff
+   ============================================================ */
 const CONTENT_DATA = {
   "sectionTitle": {
     "es": "Quiénes somos",

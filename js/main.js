@@ -280,6 +280,8 @@
       return;
     }
 
+    const isSingle = loadedSlides.length === 1;
+
     const slidesHTML = loadedSlides.map((slide, i) => {
       const type = getSlideType(slide.image);
       const defaultMs = type === 'gif' ? DEFAULT_GIF_INTERVAL : (carouselData.autoplayInterval || 5000);
@@ -295,23 +297,26 @@
       return `<div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}" data-type="${type}" style="--slide-duration:${slideMs}ms;--focal-y:${focalY}">${media}</div>`;
     }).join('');
 
-    const dotsHTML = loadedSlides.map((_, i) =>
-      `<button class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Slide ${i + 1}"></button>`
-    ).join('');
+    const dotsHTML = loadedSlides.length > 1
+      ? loadedSlides.map((_, i) =>
+          `<button class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Slide ${i + 1}"></button>`
+        ).join('')
+      : '';
 
     section.innerHTML = `
-      <div class="carousel-viewport" id="carousel-viewport">
+      <div class="carousel-viewport${isSingle ? ' single-slide' : ''}" id="carousel-viewport">
         ${slidesHTML}
         <div class="carousel-caption-overlay" id="carousel-captions"></div>
-        <div class="carousel-dots-bar">
-          <div class="carousel-dots" id="carousel-dots">${dotsHTML}</div>
-        </div>
+        ${dotsHTML ? `<div class="carousel-dots-bar"><div class="carousel-dots" id="carousel-dots">${dotsHTML}</div></div>` : ''}
       </div>
     `;
 
     carouselIndex = 0;
     updateCarouselCaption(0);
-    startSlideTimer(0);
+
+    if (!isSingle) {
+      startSlideTimer(0);
+    }
 
     $$('.carousel-dot').forEach(dot => {
       dot.addEventListener('click', () => goToSlide(parseInt(dot.dataset.index)));
@@ -323,7 +328,12 @@
         if (video.currentTime < 0.3 && playCount > 0) {
           const slideData = loadedSlides[parseInt(video.dataset.slideIndex)];
           const maxLoops = (slideData && slideData.loops) || 1;
-          if (playCount >= maxLoops) { playCount = 0; goToSlide(carouselIndex + 1); }
+          if (playCount >= maxLoops) {
+            playCount = 0;
+            if (loadedSlides.length > 1) {
+              goToSlide(carouselIndex + 1);
+            }
+          }
         }
         if (video.currentTime > 0.5) playCount = Math.max(playCount, 1);
       });
@@ -349,11 +359,23 @@
   function goToSlide(index) {
     const slides = $$('.carousel-slide');
     const dots = $$('.carousel-dot');
+    if (slides.length === 0) return;
     if (index < 0) index = slides.length - 1;
     if (index >= slides.length) index = 0;
 
     const prevIndex = carouselIndex;
-    if (prevIndex === index) return;
+
+    if (prevIndex === index && slides.length > 1) return;
+
+    // Single slide: restart animation
+    if (slides.length === 1) {
+      slides[0].classList.remove('active');
+      void slides[0].offsetWidth;
+      slides[0].classList.add('active');
+      deactivateSlideMedia(0);
+      activateSlideMedia(0);
+      return;
+    }
 
     slides.forEach((s, i) => {
       s.classList.remove('active', 'fade-out');
@@ -361,11 +383,10 @@
     });
     dots.forEach(d => d.classList.remove('active'));
 
-    // Force reflow so the pan animation restarts cleanly
     void slides[index].offsetWidth;
 
     slides[index].classList.add('active');
-    dots[index].classList.add('active');
+    if (dots[index]) dots[index].classList.add('active');
     carouselIndex = index;
 
     setTimeout(() => { slides[prevIndex].classList.remove('fade-out'); }, 1300);
@@ -406,6 +427,10 @@
   function startSlideTimer(index) {
     const slide = loadedSlides[index];
     if (!slide) return;
+
+    // Single-slide: CSS handles the loop, no JS timer needed
+    if (loadedSlides.length <= 1) return;
+
     const type = getSlideType(slide.image);
     if (type === 'video') return;
 
@@ -429,11 +454,20 @@
     const section = $('#nosotros');
     const d = contentData;
 
-    const introText = t(d.intro);
-    const introSentences = introText.split(/(?<=\.)\s+/);
-    const mid = Math.ceil(introSentences.length / 2);
-    const introLeft = introSentences.slice(0, mid).join(' ');
-    const introRight = introSentences.slice(mid).join(' ');
+    let introLeft, introRight;
+    if (d.introLeft && d.introRight) {
+      introLeft = t(d.introLeft);
+      introRight = t(d.introRight);
+    } else if (d.intro) {
+      const introText = t(d.intro);
+      const introSentences = introText.split(/(?<=\.)\s+/);
+      const mid = Math.ceil(introSentences.length / 2);
+      introLeft = introSentences.slice(0, mid).join(' ');
+      introRight = introSentences.slice(mid).join(' ');
+    } else {
+      introLeft = '';
+      introRight = '';
+    }
 
     const staffHTML = d.staff.map(person => {
       const linksHTML = person.links.map(l =>
