@@ -16,6 +16,7 @@ const CAROUSEL_DATA = {
         "es": "",
         "en": ""
       },
+      "focalPoint": "center center",
       "thumbnail": "assets/images/carousel/slide-01-thumb.jpg"
     },
     {
@@ -39,9 +40,10 @@ const CAROUSEL_DATA = {
         "en": "DAOY cells derived from medulloblastoma. Medulloblastomas are solid tumors that develop in the cerebellum, primarily affecting the pediatric population, although they can also occur in adults. There are different subtypes of medulloblastomas, each "
       },
       "captionRight": {
-        "es": "meduloblastomas cada uno con diferentes características clínicas, alteraciones genéticas, respuesta al tratamiento y pronóstico de la enfermedad. Foto: cortersía Dra. Lourdes Álvarez, HIMFG",
+        "es": "meduloblastomas cada uno con diferentes características clínicas, alteraciones genéticas, respuesta al tratamiento y pronóstico de la enfermedad. Foto: cortesía Dra. Lourdes Álvarez, HIMFG",
         "en": "with distinct clinical characteristics, genetic alterations, treatment response, and disease prognosis. Photo: courtesy of Dr. Lourdes Álvarez, HIMFG."
-      }
+      },
+      "focalPoint": "center center"
     },
     {
       "id": "slide-03",
@@ -66,7 +68,34 @@ const CAROUSEL_DATA = {
       "captionRight": {
         "es": "",
         "en": ""
-      }
+      },
+      "focalPoint": "center center"
+    },
+    {
+      "id": "slide-04",
+      "image": "assets/images/carousel/slide-04.jpg",
+      "thumbnail": "assets/images/carousel/slide-04-thumb.jpg",
+      "title": {
+        "es": "",
+        "en": ""
+      },
+      "subtitle": {
+        "es": "LNMA, IMSS",
+        "en": "LNMA, IMSS"
+      },
+      "description": {
+        "es": "Fibroblastos teñidos con colorantes fluorescentes",
+        "en": ""
+      },
+      "captionLeft": {
+        "es": "Fibroblastos (células del tejido conectivo), teñidas con colorantes fluorescentes. En verde — citoesqueleto, los músculos de las células. En rojo — mitocondrias, sus estaciones de producción de energía. El colorante verde está asociado a la faloidina",
+        "en": "Fibroblasts (connective tissue cells), stained with fluorescent dyes. In green — the cytoskeleton, the muscles of the cells. In red — mitochondria, their energy-producing stations. The green dye is associated with phalloidin, a toxin from a fungus"
+      },
+      "captionRight": {
+        "es": "la toxina de un hongo que se pega al citoesqueleto; el colorante rojo se acumula en las mitocondrias por la diferencia de voltaje producida por estas estructuras. Técnica: microscopía confocal de barrido láser. Imagen: Dr. Vadim Pérez, 2026.",
+        "en": "that binds to the cytoskeleton; the red dye accumulates in the mitochondria due to the voltage difference produced by these structures. Technique: laser scanning confocal microscopy. Image: Dr. Vadim Pérez, 2026."
+      },
+      "focalPoint": "center center"
     }
   ]
 };
