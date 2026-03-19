@@ -96,6 +96,32 @@ const CAROUSEL_DATA = {
         "en": "that binds to the cytoskeleton; the red dye accumulates in the mitochondria due to the voltage difference produced by these structures. Technique: laser scanning confocal microscopy. Image: Dr. Vadim Pérez, 2026."
       },
       "focalPoint": "center center"
+    },
+    {
+      "id": "slide-05",
+      "image": "assets/images/carousel/slide-05.jpg",
+      "thumbnail": "assets/images/carousel/slide-05-thumb.jpg",
+      "title": {
+        "es": "",
+        "en": ""
+      },
+      "subtitle": {
+        "es": "LNMA, IMSS",
+        "en": "LNMA, IMSS"
+      },
+      "description": {
+        "es": "",
+        "en": ""
+      },
+      "captionLeft": {
+        "es": "Instalación del KFBIO KF-FL-400, primer escáner de laminillas de este tipo en América Latina. Con una capacidad para 400 laminillas y posibilidad de escaneo de muestras en campo claro y fluorescencia, actualmente es uno de los equipos más utilizados ",
+        "en": "Installation of the KFBIO KF-FL-400, the first slide scanner of its kind in Latin America. With a capacity for 400 slides per run, and the ability to scan samples in brightfield and fluorescence, it is currently one of the most used pieces of "
+      },
+      "captionRight": {
+        "es": "de nuestro laboratorio. Fines del 2024.",
+        "en": "equipment in our laboratory. Late 2024."
+      },
+      "focalPoint": "center center"
     }
   ]
 };
