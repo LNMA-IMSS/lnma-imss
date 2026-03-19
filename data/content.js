@@ -1,18 +1,15 @@
-/* ============================================================
-   ABOUT SECTION — Mission, Vision, Staff
-   ============================================================ */
 const CONTENT_DATA = {
   "sectionTitle": {
     "es": "Quiénes somos",
     "en": "About Us"
   },
   "introLeft": {
-    "es": "El Laboratorio Nacional de Microscopía Avanzada-IMSS (LNMA-IMSS) es un fruto de la colaboración entre el Instituto Mexicano del Seguro Social y la Universidad Nacional Autónoma de México. El LNMA-IMSS funciona en la modalidad de \"core facility\" ofreciendo servicios y asistencia en la preparación de muestras (cortes de tejido en fresco o incluido en para-",
-    "en": "The National Laboratory of Advanced Microscopy-IMSS (LNMA-IMSS) is a collaboration between the Mexican Institute of Social Security and the National Autonomous University of Mexico. LNMA-IMSS operates as a core facility offering services and assistance in sample preparation (fresh "
+    "es": "El Laboratorio Nacional de Microscopía Avanzada-IMSS (LNMA-IMSS) es un fruto de la colaboración entre el Instituto Mexicano del Seguro Social y la Universidad Nacional Autónoma de México. El LNMA-IMSS funciona en la modalidad de \"core facility\" ofreciendo servicios y asistencia en la preparación de muestras (cortes de tejido en",
+    "en": "The National Laboratory of Advanced Microscopy-IMSS (LNMA-IMSS) is a collaboration between the Mexican Institute of Social Security and the National Autonomous University of Mexico. LNMA-IMSS operates as a core facility offering services and assistance in sample preparation (fresh or paraffin-embedded tissue sections, tissue"
   },
   "introRight": {
-    "es": "fina, clarificación de tejidos, marcaje y tinciones), visualización de la muestra viva o fijada utilizando técnicas de microscopía de campo claro, epifluorescencia y confocal, así como la captura de imágenes y videos, y la reconstrucción de la estructura tridimensional de la muestra, en función de las necesidades del usuario.",
-    "en": "or paraffin-embedded tissue sections, tissue clearing, labeling and staining), visualization of live or fixed samples using brightfield, epifluorescence and confocal microscopy techniques, as well as image and video capture, and three-dimensional reconstruction of the sample, according to user needs."
+    "es": "fresco o incluido en parafina, clarificación de tejidos, marcaje y tinciones), visualización de la muestra viva o fijada utilizando técnicas de microscopía de campo claro, epifluorescencia y confocal, así como la captura de imágenes y videos, y la reconstrucción de la estructura tridimensional de la muestra, en función de las necesidades del usuario.",
+    "en": "clearing, labeling and staining), visualization of live or fixed samples using brightfield, epifluorescence and confocal microscopy techniques, as well as image and video capture, and three-dimensional reconstruction of the sample, according to user needs."
   },
   "mission": {
     "title": {
@@ -48,8 +45,8 @@ const CONTENT_DATA = {
       },
       "photo": "assets/images/staff/vadim-perez.png",
       "bio": {
-        "es": "Doctorado en Ciencias Fisiológicas, Universidad de Colima, México (2007). Maestría en Biofísica, Universidad Estatal de Nizhny Novgorod, Rusia (2003).",
-        "en": "PhD in Physiological Sciences, University of Colima, Mexico (2007). MSc in Biophysics, Nizhny Novgorod State University, Russia (2003)."
+        "es": "Doctorado en Ciencias Fisiológicas, Universidad de Colima, México (2007).<br>Maestría en Biofísica, Universidad Estatal de Nizhny Novgorod, Rusia (2003).",
+        "en": "PhD in Physiological Sciences, University of Colima, Mexico (2007).<br>MSc in Biophysics, Nizhny Novgorod State University, Russia (2003)."
       },
       "interests": {
         "es": "Áreas de interés:<br>Arquitectónica funcional comparativa.<br>Señalización por calcio.<br>Métodos de investigación mediante microscopía óptica.",
@@ -87,8 +84,8 @@ const CONTENT_DATA = {
       },
       "photo": "assets/images/staff/alam-palma.png",
       "bio": {
-        "es": "Técnico en Histotecnología, Universidad Nacional Autónoma de México. Especialidad en control de calidad, Centre Hospitalier \"Sainte-Anne\", París, Francia. Especialidad en inmunohistoquímica, Institut Pasteur, París, Francia.",
-        "en": "Histotechnology Technician, National Autonomous University of Mexico. Specialization in quality control, Centre Hospitalier \"Sainte-Anne\", Paris, France. Specialization in immunohistochemistry, Institut Pasteur, Paris, France."
+        "es": "Técnico en Histotecnología, Universidad Nacional Autónoma de México.<br>Especialidad en control de calidad, Centre Hospitalier \"Sainte-Anne\", París, Francia.<br>Especialidad en inmunohistoquímica, Institut Pasteur, París, Francia.",
+        "en": "Histotechnology Technician, National Autonomous University of Mexico.<br>Specialization in quality control, Centre Hospitalier \"Sainte-Anne\", Paris, France.<br>Specialization in immunohistochemistry, Institut Pasteur, Paris, France."
       },
       "interests": {
         "es": "Actualmente: Presidente de la Asociación Mexicana de Técnicos en Patobiología (AMETEP).",

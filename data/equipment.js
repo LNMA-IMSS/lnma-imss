@@ -155,6 +155,40 @@ const EQUIPMENT_DATA = {
       }
     },
     {
+      "id": "equip-vcq5me5j",
+      "category": "microscopy",
+      "name": {
+        "es": "Sistema multiplex Lunaphore COMET",
+        "en": "Multiplex system Lunaphore COMET"
+      },
+      "image": "",
+      "popupImage": "",
+      "shortDescription": {
+        "es": "Sistema de inmunofluorescencia multiplex Lunaphore COMET",
+        "en": "Multiplex spatial biology imaging system Lunaphore COMET"
+      },
+      "fullDescription": {
+        "es": "COMET es una plataforma automatizada de inmunofluorescencia multiplex para biología espacial.\nRealiza ciclos secuenciales de tinción, adquisición de imágenes y eliminación de anticuerpos en la misma muestra. Permite el análisis de proteínas y ARN manteniendo el contexto espacial del tejido.",
+        "en": "COMET is a fully automated multiplex immunofluorescence platform for spatial biology.\nIt performs sequential staining, imaging, and antibody removal on the same tissue section.\nThe system enables high-plex protein and RNA analysis while preserving spatial context."
+      },
+      "specs": {
+        "es": [
+          "Permite hasta ~40 marcadores por lámina mediante ciclos secuenciales de doble detección (~20 ciclos)",
+          "Flujo de trabajo completamente automatizado que integra tinción, imagen y preprocesamiento",
+          "Capacidad de hasta 4 láminas simultáneamente con procesos paralelizados",
+          "Tiempo típico de corrida completa de ~24 horas con alta reproducibilidad",
+          "Área de imagen de hasta ~12.5 × 12.5 mm con resolución subcelular (~0.28 µm/píxel)"
+        ],
+        "en": [
+          "Up to ~40 markers per slide using sequential dual-plex cycles (≈20 cycles).",
+          "Automated workflow integrating staining, imaging, and image preprocessing.",
+          "Up to 4 slides simultaneously with parallelized staining and imaging.",
+          "Typical full run completed within ~24 hours.",
+          "Imaging area up to ~12.5 × 12.5 mm with subcellular resolution (~0.28 µm/pixel)."
+        ]
+      }
+    },
+    {
       "id": "escaner-leica-aperio-fl",
       "category": "microscopy",
       "name": {
