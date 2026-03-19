@@ -21,7 +21,7 @@ const EQUIPMENT_DATA = {
         "es": "Confocal Nikon A1",
         "en": "Nikon A1 confocal"
       },
-      "image": "assets/images/equipment/confocal-nikon-a1.svg",
+      "image": "assets/images/equipment/confocal-nikon-a1.jpg",
       "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.svg",
       "shortDescription": {
         "es": "Microscopio confocal de barrido láser.",
