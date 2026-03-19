@@ -199,18 +199,18 @@ a:hover { color: var(--color-primary); }
 
 /* --- Portrait pan animation (left → right with fade-out at end) --- */
 @keyframes panLeftToRight {
-  0%   { object-position: 0% center; opacity: 1; }
-  85%  { object-position: 100% center; opacity: 1; }
-  100% { object-position: 100% center; opacity: 0; }
+  0%   { object-position: 0% var(--focal-y, center); opacity: 1; }
+  85%  { object-position: 100% var(--focal-y, center); opacity: 1; }
+  100% { object-position: 100% var(--focal-y, center); opacity: 0; }
 }
 
 /* Single-slide loop: pan, fade out, snap back, fade in */
 @keyframes panLeftToRightLoop {
-  0%   { object-position: 0% center; opacity: 1; }
-  80%  { object-position: 100% center; opacity: 1; }
-  90%  { object-position: 100% center; opacity: 0; }
-  91%  { object-position: 0% center; opacity: 0; }
-  100% { object-position: 0% center; opacity: 1; }
+  0%   { object-position: 0% var(--focal-y, center); opacity: 1; }
+  80%  { object-position: 100% var(--focal-y, center); opacity: 1; }
+  90%  { object-position: 100% var(--focal-y, center); opacity: 0; }
+  91%  { object-position: 0% var(--focal-y, center); opacity: 0; }
+  100% { object-position: 0% var(--focal-y, center); opacity: 1; }
 }
 
 /* Caption overlay — ONE image, two text columns */
@@ -745,14 +745,14 @@ a:hover { color: var(--color-primary); }
   .carousel-slide img,
   .carousel-slide video {
     object-fit: cover;
-    object-position: 0% center;
+    object-position: 0% var(--focal-y, center);
   }
   .carousel-slide.active img,
   .carousel-slide.active video {
     animation: panLeftToRight var(--slide-duration, 5s) linear forwards;
   }
 
-  /* Single slide: infinite loop with fade-in/out at edges */
+  /* Single slide: infinite loop */
   .carousel-viewport.single-slide .carousel-slide.active img,
   .carousel-viewport.single-slide .carousel-slide.active video {
     animation: panLeftToRightLoop var(--slide-duration, 5s) linear infinite;

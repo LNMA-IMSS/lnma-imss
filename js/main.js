@@ -267,6 +267,7 @@
         slide.poster       = dataEntry.poster;
         slide.loops        = dataEntry.loops;
         slide.duration     = dataEntry.duration;
+        slide.focalPoint   = dataEntry.focalPoint;
       }
     });
   }
@@ -279,63 +280,50 @@
       return;
     }
 
-    const isSingle = loadedSlides.length === 1;
-
     const slidesHTML = loadedSlides.map((slide, i) => {
       const type = getSlideType(slide.image);
       const defaultMs = type === 'gif' ? DEFAULT_GIF_INTERVAL : (carouselData.autoplayInterval || 5000);
       const slideMs = (slide.duration) || defaultMs;
+      const focal = slide.focalPoint || 'center center';
+      const focalY = focal.split(/\s+/)[1] || 'center';
       let media;
       if (type === 'video') {
-        media = `<video class="carousel-media" data-slide-index="${i}" src="${slide.image}" ${slide.poster ? `poster="${slide.poster}"` : ''} muted loop playsinline preload="metadata"></video>`;
+        media = `<video class="carousel-media" data-slide-index="${i}" src="${slide.image}" ${slide.poster ? `poster="${slide.poster}"` : ''} muted loop playsinline preload="metadata" style="object-position:${focal}"></video>`;
       } else {
-        media = `<img class="carousel-media" src="${slide.image}" alt="">`;
+        media = `<img class="carousel-media" src="${slide.image}" alt="" style="object-position:${focal}">`;
       }
-      return `<div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}" data-type="${type}" style="--slide-duration: ${slideMs}ms">${media}</div>`;
+      return `<div class="carousel-slide ${i === 0 ? 'active' : ''}" data-index="${i}" data-type="${type}" style="--slide-duration:${slideMs}ms;--focal-y:${focalY}">${media}</div>`;
     }).join('');
 
-    const dotsHTML = loadedSlides.length > 1
-      ? loadedSlides.map((_, i) =>
-          `<button class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Slide ${i + 1}"></button>`
-        ).join('')
-      : '';
+    const dotsHTML = loadedSlides.map((_, i) =>
+      `<button class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Slide ${i + 1}"></button>`
+    ).join('');
 
     section.innerHTML = `
-      <div class="carousel-viewport${isSingle ? ' single-slide' : ''}" id="carousel-viewport">
+      <div class="carousel-viewport" id="carousel-viewport">
         ${slidesHTML}
         <div class="carousel-caption-overlay" id="carousel-captions"></div>
-        ${dotsHTML ? `<div class="carousel-dots-bar"><div class="carousel-dots" id="carousel-dots">${dotsHTML}</div></div>` : ''}
+        <div class="carousel-dots-bar">
+          <div class="carousel-dots" id="carousel-dots">${dotsHTML}</div>
+        </div>
       </div>
     `;
 
     carouselIndex = 0;
     updateCarouselCaption(0);
-
-    // For multiple slides, start timer. For single image slides in portrait,
-    // CSS handles the infinite loop via panLeftToRightLoop animation.
-    // For single slides in landscape (no animation), no timer needed.
-    if (!isSingle) {
-      startSlideTimer(0);
-    }
+    startSlideTimer(0);
 
     $$('.carousel-dot').forEach(dot => {
       dot.addEventListener('click', () => goToSlide(parseInt(dot.dataset.index)));
     });
 
-    // Video loop/advance handling
     $$('video.carousel-media').forEach(video => {
       let playCount = 0;
       video.addEventListener('timeupdate', () => {
         if (video.currentTime < 0.3 && playCount > 0) {
           const slideData = loadedSlides[parseInt(video.dataset.slideIndex)];
           const maxLoops = (slideData && slideData.loops) || 1;
-          if (playCount >= maxLoops) {
-            playCount = 0;
-            if (loadedSlides.length > 1) {
-              goToSlide(carouselIndex + 1);
-            }
-            // Single video: just let it keep looping via the `loop` attribute
-          }
+          if (playCount >= maxLoops) { playCount = 0; goToSlide(carouselIndex + 1); }
         }
         if (video.currentTime > 0.5) playCount = Math.max(playCount, 1);
       });
@@ -361,25 +349,11 @@
   function goToSlide(index) {
     const slides = $$('.carousel-slide');
     const dots = $$('.carousel-dot');
-    if (slides.length === 0) return;
     if (index < 0) index = slides.length - 1;
     if (index >= slides.length) index = 0;
 
     const prevIndex = carouselIndex;
-
-    // Same slide requested (only happens with multiple slides wrapping)
-    if (prevIndex === index && slides.length > 1) return;
-
-    // For single slides, this shouldn't normally be called,
-    // but if it is, restart the animation
-    if (slides.length === 1) {
-      slides[0].classList.remove('active');
-      void slides[0].offsetWidth; // force reflow
-      slides[0].classList.add('active');
-      deactivateSlideMedia(0);
-      activateSlideMedia(0);
-      return;
-    }
+    if (prevIndex === index) return;
 
     slides.forEach((s, i) => {
       s.classList.remove('active', 'fade-out');
@@ -391,7 +365,7 @@
     void slides[index].offsetWidth;
 
     slides[index].classList.add('active');
-    if (dots[index]) dots[index].classList.add('active');
+    dots[index].classList.add('active');
     carouselIndex = index;
 
     setTimeout(() => { slides[prevIndex].classList.remove('fade-out'); }, 1300);
@@ -432,13 +406,8 @@
   function startSlideTimer(index) {
     const slide = loadedSlides[index];
     if (!slide) return;
-
-    // Single-slide carousels: CSS handles the infinite loop in portrait;
-    // in landscape the image just displays statically. No JS timer needed.
-    if (loadedSlides.length <= 1) return;
-
     const type = getSlideType(slide.image);
-    if (type === 'video') return; // Videos advance via timeupdate event
+    if (type === 'video') return;
 
     const defaultMs = type === 'gif'
       ? DEFAULT_GIF_INTERVAL
@@ -460,17 +429,11 @@
     const section = $('#nosotros');
     const d = contentData;
 
-    let introLeft, introRight;
-    if (d.introLeft && d.introRight) {
-      introLeft = t(d.introLeft);
-      introRight = t(d.introRight);
-    } else {
-      const introText = t(d.intro);
-      const introSentences = introText.split(/(?<=\.)\s+/);
-      const mid = Math.ceil(introSentences.length / 2);
-      introLeft = introSentences.slice(0, mid).join(' ');
-      introRight = introSentences.slice(mid).join(' ');
-    }
+    const introText = t(d.intro);
+    const introSentences = introText.split(/(?<=\.)\s+/);
+    const mid = Math.ceil(introSentences.length / 2);
+    const introLeft = introSentences.slice(0, mid).join(' ');
+    const introRight = introSentences.slice(mid).join(' ');
 
     const staffHTML = d.staff.map(person => {
       const linksHTML = person.links.map(l =>
