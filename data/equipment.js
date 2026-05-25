@@ -51,6 +51,28 @@ const EQUIPMENT_DATA = {
       }
     },
     {
+      "id": "equip-ce655wxm",
+      "category": "microscopy",
+      "name": {
+        "es": "(Próximamente) Confocal Nikon AX + NSPARC",
+        "en": "(Coming soon) Confocal Nikon AX + NSPARC"
+      },
+      "image": "assets/images/equipment/proximamente-confocal-nikon-ax-nsparc.jpg",
+      "popupImage": "",
+      "shortDescription": {
+        "es": "",
+        "en": ""
+      },
+      "fullDescription": {
+        "es": "",
+        "en": ""
+      },
+      "specs": {
+        "es": [],
+        "en": []
+      }
+    },
+    {
       "id": "macroscopio-nikon-az100",
       "category": "microscopy",
       "name": {
