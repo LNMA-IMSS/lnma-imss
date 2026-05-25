@@ -214,8 +214,8 @@
           "es": "Confocal Nikon A1",
           "en": "Nikon A1 confocal"
         },
-        "image": "assets/images/equipment/confocal-nikon-a1.svg",
-        "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.svg",
+        "image": "assets/images/equipment/confocal-nikon-a1.jpg",
+        "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.jpg",
         "shortDescription": {
           "es": "Microscopio confocal de barrido láser.",
           "en": "Confocal laser scanning microscope."
@@ -286,8 +286,8 @@
           "es": "Escáner de Laminillas KFBIO KF-FL-400 (campo claro y fluorescencia)",
           "en": "Slide Scanner KFBIO KF-FL-400 (bright field and fluorescence)"
         },
-        "image": "assets/images/equipment/escaner-kfbio-cc-fl.svg",
-        "popupImage": "assets/images/equipment/popup-escaner-kfbio-cc-fl.svg",
+        "image": "assets/images/equipment/escaner-de-laminillas-kfbio-kf-fl-400-campo-claro-y-fluorescencia.jpg",
+        "popupImage": "assets/images/equipment/popup-escaner-de-laminillas-kfbio-kf-fl-400-campo-claro-y-fluorescencia.jpg",
         "shortDescription": {
           "es": "Escáner de laminillas de alto rendimiento para digitalización de muestras en campo claro y fluorescencia.",
           "en": "High-throughput bright field and fluorescence slide scanner."
@@ -322,8 +322,8 @@
           "es": "Sistema multiplex Lunaphore COMET",
           "en": "Multiplex system Lunaphore COMET"
         },
-        "image": "",
-        "popupImage": "",
+        "image": "assets/images/equipment/sistema-multiplex-lunaphore-comet.jpg",
+        "popupImage": "assets/images/equipment/popup-sistema-multiplex-lunaphore-comet.jpg",
         "shortDescription": {
           "es": "Sistema de inmunofluorescencia multiplex Lunaphore COMET",
           "en": "Multiplex spatial biology imaging system Lunaphore COMET"
@@ -447,7 +447,7 @@
           "en": "BioSan UVT-S-AR cabinet and Compresstome VF-300 vibratome"
         },
         "image": "assets/images/equipment/campana-vibratomo.svg",
-        "popupImage": "assets/images/equipment/popup-campana-vibratomo.svg",
+        "popupImage": "assets/images/equipment/popup-campana-biosan-uvt-s-ar-y-vibratomo-compresstome-vf-300.jpg",
         "shortDescription": {
           "es": "Sistema de corte de tejido fresco mediante vibración para rebanadas gruesas.",
           "en": "Fresh tissue cutting system using vibration for thick sections."
@@ -538,8 +538,8 @@
           "es": "Centrífuga Refrigerada Gyrozen 1580",
           "en": "Refrigerated Centrifuge Gyrozen 1580"
         },
-        "image": "assets/images/equipment/centrifuga-refrigerada.svg",
-        "popupImage": "assets/images/equipment/popup-centrifuga-refrigerada.svg",
+        "image": "assets/images/equipment/centrifuga-refrigerada-gyrozen-1580.jpg",
+        "popupImage": "assets/images/equipment/popup-centrifuga-refrigerada-gyrozen-1580.jpg",
         "shortDescription": {
           "es": "Centrífuga refrigerada para separación de muestras biológicas.",
           "en": "Temperature-controlled centrifuge for biological sample separation."
