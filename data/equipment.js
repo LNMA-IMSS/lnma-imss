@@ -22,7 +22,7 @@ const EQUIPMENT_DATA = {
         "en": "Nikon A1 confocal"
       },
       "image": "assets/images/equipment/confocal-nikon-a1.jpg",
-      "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.svg",
+      "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.jpg",
       "shortDescription": {
         "es": "Microscopio confocal de barrido láser.",
         "en": "Confocal laser scanning microscope."
@@ -93,8 +93,8 @@ const EQUIPMENT_DATA = {
         "es": "Escáner de Laminillas KFBIO KF-FL-400 (campo claro y fluorescencia)",
         "en": "Slide Scanner KFBIO KF-FL-400 (bright field and fluorescence)"
       },
-      "image": "assets/images/equipment/escaner-kfbio-cc-fl.svg",
-      "popupImage": "assets/images/equipment/popup-escaner-kfbio-cc-fl.svg",
+      "image": "assets/images/equipment/escaner-de-laminillas-kfbio-kf-fl-400-campo-claro-y-fluorescencia.jpg",
+      "popupImage": "assets/images/equipment/popup-escaner-de-laminillas-kfbio-kf-fl-400-campo-claro-y-fluorescencia.jpg",
       "shortDescription": {
         "es": "Escáner de laminillas de alto rendimiento para digitalización de muestras en campo claro y fluorescencia.",
         "en": "High-throughput bright field and fluorescence slide scanner."
