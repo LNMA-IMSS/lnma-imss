@@ -21,7 +21,7 @@ const EQUIPMENT_DATA = {
         "es": "Confocal Nikon A1",
         "en": "Nikon A1 confocal"
       },
-      "image": "assets/images/equipment/confocal-nikon-a1.jpg",
+      "image": "assets/images/equipment/confocal-nikon-a1.svg",
       "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.svg",
       "shortDescription": {
         "es": "Microscopio confocal de barrido láser.",
@@ -87,38 +87,6 @@ const EQUIPMENT_DATA = {
       }
     },
     {
-      "id": "microscopio-zeiss-axioskop2",
-      "category": "microscopy",
-      "name": {
-        "es": "Microscopio Zeiss Axioskop-2",
-        "en": "Zeiss Axioskop-2 Microscope"
-      },
-      "image": "assets/images/equipment/microscopio-zeiss-axioskop2.svg",
-      "popupImage": "assets/images/equipment/popup-microscopio-zeiss-axioskop2.svg",
-      "shortDescription": {
-        "es": "Microscopio de investigación con campo claro, contraste de fases y epifluorescencia.",
-        "en": "Research microscope with brightfield, phase contrast, and epifluorescence."
-      },
-      "fullDescription": {
-        "es": "El Zeiss Axioskop-2 es un microscopio vertical de investigación que ofrece múltiples técnicas de contraste incluyendo campo claro, campo oscuro y contraste de fases. Es ideal para la observación histológica de rutina y la documentación fotográfica de muestras biológicas.",
-        "en": "The Zeiss Axioskop-2 is an upright research microscope offering multiple contrast techniques including brightfield, darkfield and phase contrast. Ideal for routine histological observation and photographic documentation of biological samples."
-      },
-      "specs": {
-        "es": [
-          "Tipo de sistema: Recto",
-          "Objetivos: Fluar 5x / 0.15.<br>AchroPlan 10x / 0.25.<br>Plan-NeoFluar 20x / 0.50.<br>EC Plan-NeoFluar 40x / 0.75.<br>Plan-NeoFluar 100x / 1.30 (oil)",
-          "Detector: Cámara DS-Fi3 5.9MP Color CMOS (no permite separar canales)",
-          "Aplicaciones: observación y toma de fotografías de muestras en campo claro"
-        ],
-        "en": [
-          "System type: Upright",
-          "Objectives: Fluar 5x / 0.25. Infinity/0.17<br>Plan-NeoFluar 10x / 0.30. Infinity/0.17<br>Plan-NeoFluar 20x / 0.50. Infinity/0.17<br>Plan-NeoFluar 40x / 1.3. Infinity/0.17<br>Plan-NeoFluar 63x / 1.25. Infinity/0.17 (oil)<br>Plan-NeoFluar 100x / 1.30 Oil Immersion. Infinity/0.17 (oil)",
-          "Detector: DS-Fi3 5.9MP Color CMOS Camera (does not allow channel separation)",
-          "Applications: observation and brightfield photography of samples"
-        ]
-      }
-    },
-    {
       "id": "escaner-kfbio-cc-fl",
       "category": "microscopy",
       "name": {
@@ -161,8 +129,8 @@ const EQUIPMENT_DATA = {
         "es": "Sistema multiplex Lunaphore COMET",
         "en": "Multiplex system Lunaphore COMET"
       },
-      "image": "",
-      "popupImage": "",
+      "image": "assets/images/equipment/sistema-multiplex-lunaphore-comet.jpg",
+      "popupImage": "assets/images/equipment/popup-sistema-multiplex-lunaphore-comet.jpg",
       "shortDescription": {
         "es": "Sistema de inmunofluorescencia multiplex Lunaphore COMET",
         "en": "Multiplex spatial biology imaging system Lunaphore COMET"
@@ -173,18 +141,60 @@ const EQUIPMENT_DATA = {
       },
       "specs": {
         "es": [
-          "Permite hasta ~40 marcadores por lámina mediante ciclos secuenciales de doble detección (~20 ciclos)",
-          "Flujo de trabajo completamente automatizado que integra tinción, imagen y preprocesamiento",
-          "Capacidad de hasta 4 láminas simultáneamente con procesos paralelizados",
-          "Tiempo típico de corrida completa de ~24 horas con alta reproducibilidad",
-          "Área de imagen de hasta ~12.5 × 12.5 mm con resolución subcelular (~0.28 µm/píxel)"
+          "Método de marcaje múltiple: Ciclos secuenciales de tinción y captura de imágenes en la misma sección de tejido. Se pueden realizar ciclos adicionales en la misma laminilla.",
+          "Número máximo práctico de marcadores: 20-plex en 20 muestras en 1 semana; el límite teórico superior lo determina el número de ciclos repetidos que aplique el usuario.",
+          "Anticuerpos primarios: Utiliza anticuerpos primarios convencionales, disponibles comercialmente, sin marcaje. No requiere conjugación ni barcoding antes de su uso.",
+          "Automatización: La tinción, la captura de imágenes y la sustracción de fondo se realizan sin intervención del usuario durante la operación.",
+          "Formato de salida: OME-TIFF. El algoritmo de sustracción de fondo se aplica automáticamente durante el preprocesamiento de las imágenes.",
+          "Capacidad multiómica: Detección de proteínas y de ARN de interés en la misma sección de tejido, por separado o en combinación. Requiere RNAscope™ HiPlex Pro para el ARN y anticuerpos primarios sin conjugar para las proteínas.",
+          "Rendimiento: Hasta 4 laminillas estándar por corrida.",
+          "Soporte para desarrollo de ensayos: Incluye software de generación de protocolos. El usuario proporciona la selección de anticuerpos primarios; el sistema genera protocolos de hiperplex sin necesidad de programación manual.",
+          "Amplificación de señal: Kit opcional (SPYRE™ Signal Amplification Kit) para detectar marcadores de baja expresión o baja abundancia.",
+          "Compatibilidad con software de análisis: Exporta imágenes a plataformas de análisis de terceros. Compatibilidad con Visiopharm Oncotopix® Discovery, Indica Labs HALO® / HALO AI™, Nucleai y QuPath."
         ],
         "en": [
-          "Up to ~40 markers per slide using sequential dual-plex cycles (≈20 cycles).",
-          "Automated workflow integrating staining, imaging, and image preprocessing.",
-          "Up to 4 slides simultaneously with parallelized staining and imaging.",
-          "Typical full run completed within ~24 hours.",
-          "Imaging area up to ~12.5 × 12.5 mm with subcellular resolution (~0.28 µm/pixel)."
+          "Multiplexing method: Sequential staining and imaging cycles on the same tissue section. Additional cycles can be performed on the same slide.",
+          "Maximum practical plex level: 20-plex on 20 samples within 1 week; theoretical upper limit determined by number of repeat cycles the user applies.",
+          "Primary antibody requirement: Uses conventional, commercially available, label-free primary antibodies. No antibody conjugation or barcoding required before use.",
+          "Automation scope: Staining, image acquisition, and background subtraction are performed without user intervention during the run.",
+          "Output file format: OME-TIFF. Background subtraction algorithm applied automatically during image preprocessing.",
+          "Multiomics capability: Detection of proteins and RNA targets on the same tissue section, either separately or in combination. Requires RNAscope™ HiPlex Pro for RNA and unconjugated primary antibodies for proteins.",
+          "Sample throughput – slides: Up to 4 standard microscope slides per run.",
+          "Assay development support: Protocol generation software included. User provides primary antibody selection; system generates hyperplex protocols without manual scripting.",
+          "Signal amplification: Optional kit (SPYRE™ Signal Amplification Kit) for detecting low-expression or low-abundance markers.",
+          "Compatibility with analysis software: Exports images to third-party analysis platforms. Compatibility with Visiopharm Oncotopix® Discovery, Indica Labs HALO® / HALO AI™, Nucleai, and QuPath."
+        ]
+      }
+    },
+    {
+      "id": "microscopio-zeiss-axioskop2",
+      "category": "microscopy",
+      "name": {
+        "es": "Microscopio Zeiss Axioskop-2",
+        "en": "Zeiss Axioskop-2 Microscope"
+      },
+      "image": "assets/images/equipment/microscopio-zeiss-axioskop2.svg",
+      "popupImage": "assets/images/equipment/popup-microscopio-zeiss-axioskop2.svg",
+      "shortDescription": {
+        "es": "Microscopio de investigación con campo claro, contraste de fases y epifluorescencia.",
+        "en": "Research microscope with brightfield, phase contrast, and epifluorescence."
+      },
+      "fullDescription": {
+        "es": "El Zeiss Axioskop-2 es un microscopio vertical de investigación que ofrece múltiples técnicas de contraste incluyendo campo claro, campo oscuro y contraste de fases. Es ideal para la observación histológica de rutina y la documentación fotográfica de muestras biológicas.",
+        "en": "The Zeiss Axioskop-2 is an upright research microscope offering multiple contrast techniques including brightfield, darkfield and phase contrast. Ideal for routine histological observation and photographic documentation of biological samples."
+      },
+      "specs": {
+        "es": [
+          "Tipo de sistema: Recto",
+          "Objetivos: Fluar 5x / 0.15.<br>AchroPlan 10x / 0.25.<br>Plan-NeoFluar 20x / 0.50.<br>EC Plan-NeoFluar 40x / 0.75.<br>Plan-NeoFluar 100x / 1.30 (oil)",
+          "Detector: Cámara DS-Fi3 5.9MP Color CMOS (no permite separar canales)",
+          "Aplicaciones: observación y toma de fotografías de muestras en campo claro"
+        ],
+        "en": [
+          "System type: Upright",
+          "Objectives: Fluar 5x / 0.25. Infinity/0.17<br>Plan-NeoFluar 10x / 0.30. Infinity/0.17<br>Plan-NeoFluar 20x / 0.50. Infinity/0.17<br>Plan-NeoFluar 40x / 1.3. Infinity/0.17<br>Plan-NeoFluar 63x / 1.25. Infinity/0.17 (oil)<br>Plan-NeoFluar 100x / 1.30 Oil Immersion. Infinity/0.17 (oil)",
+          "Detector: DS-Fi3 5.9MP Color CMOS Camera (does not allow channel separation)",
+          "Applications: observation and brightfield photography of samples"
         ]
       }
     },
@@ -262,7 +272,7 @@ const EQUIPMENT_DATA = {
         "en": "BioSan UVT-S-AR cabinet and Compresstome VF-300 vibratome"
       },
       "image": "assets/images/equipment/campana-vibratomo.svg",
-      "popupImage": "assets/images/equipment/popup-campana-biosan-uvt-s-ar-y-vibratomo-compresstome-vf-300.jpg",
+      "popupImage": "assets/images/equipment/popup-campana-vibratomo.svg",
       "shortDescription": {
         "es": "Sistema de corte de tejido fresco mediante vibración para rebanadas gruesas.",
         "en": "Fresh tissue cutting system using vibration for thick sections."
@@ -353,8 +363,8 @@ const EQUIPMENT_DATA = {
         "es": "Centrífuga Refrigerada Gyrozen 1580",
         "en": "Refrigerated Centrifuge Gyrozen 1580"
       },
-      "image": "assets/images/equipment/centrifuga-refrigerada-gyrozen-1580.jpg",
-      "popupImage": "assets/images/equipment/popup-centrifuga-refrigerada-gyrozen-1580.jpg",
+      "image": "assets/images/equipment/centrifuga-refrigerada.svg",
+      "popupImage": "assets/images/equipment/popup-centrifuga-refrigerada.svg",
       "shortDescription": {
         "es": "Centrífuga refrigerada para separación de muestras biológicas.",
         "en": "Temperature-controlled centrifuge for biological sample separation."
