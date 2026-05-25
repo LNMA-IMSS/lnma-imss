@@ -21,7 +21,7 @@ const EQUIPMENT_DATA = {
         "es": "Confocal Nikon A1",
         "en": "Nikon A1 confocal"
       },
-      "image": "assets/images/equipment/confocal-nikon-a1.svg",
+      "image": "assets/images/equipment/confocal-nikon-a1.jpg",
       "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.svg",
       "shortDescription": {
         "es": "Microscopio confocal de barrido láser.",
@@ -272,7 +272,7 @@ const EQUIPMENT_DATA = {
         "en": "BioSan UVT-S-AR cabinet and Compresstome VF-300 vibratome"
       },
       "image": "assets/images/equipment/campana-vibratomo.svg",
-      "popupImage": "assets/images/equipment/popup-campana-vibratomo.svg",
+      "popupImage": "assets/images/equipment/popup-campana-biosan-uvt-s-ar-y-vibratomo-compresstome-vf-300.jpg",
       "shortDescription": {
         "es": "Sistema de corte de tejido fresco mediante vibración para rebanadas gruesas.",
         "en": "Fresh tissue cutting system using vibration for thick sections."
@@ -363,8 +363,8 @@ const EQUIPMENT_DATA = {
         "es": "Centrífuga Refrigerada Gyrozen 1580",
         "en": "Refrigerated Centrifuge Gyrozen 1580"
       },
-      "image": "assets/images/equipment/centrifuga-refrigerada.svg",
-      "popupImage": "assets/images/equipment/popup-centrifuga-refrigerada.svg",
+      "image": "assets/images/equipment/centrifuga-refrigerada-gyrozen-1580.jpg",
+      "popupImage": "assets/images/equipment/popup-centrifuga-refrigerada-gyrozen-1580.jpg",
       "shortDescription": {
         "es": "Centrífuga refrigerada para separación de muestras biológicas.",
         "en": "Temperature-controlled centrifuge for biological sample separation."
