@@ -50,8 +50,8 @@ const SITE_CONFIG = {
   ],
   "contact": {
     "address": {
-      "es": "Centro Médico Nacional Siglo XXI<br>Av. Cuauhtémoc 330, Ed. CORSE, Col.<br>Doctores, CDMX, México.",
-      "en": "Centro Médico Nacional Siglo XXI<br>Av. Cuauhtémoc 330, CORSE Bldg., Col.<br>Doctores, Mexico City, Mexico."
+      "es": "Centro Médico Nacional Siglo XXI<br>Av. Cuauhtémoc 330, Ed. CORSE, Col.<br>Doctores, CDMX, México. CP06720",
+      "en": "Centro Médico Nacional Siglo XXI<br>Av. Cuauhtémoc 330, CORSE Bldg., Col.<br>Doctores, Mexico City, Mexico. 06720"
     },
     "hours": {
       "es": "Lunes a Viernes 08:00 - 16:00 Hrs.",
