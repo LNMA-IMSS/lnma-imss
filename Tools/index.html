@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parallax Bench — autostereogram video renderer (mockup v19)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFF3F4; --surface:#FFFFFF; --ink:#0E2429; --muted:#5D7278;
+  --rule:#D3DEE0; --rule-soft:#E6EDEE;
+  --eyeL:#B33227; --eyeR:#0C6C7C; --warn:#A9741A; --ok:#2C6E4A;
+}
+*{box-sizing:border-box} html,body{margin:0}
+body{background:var(--paper);
+  background-image:linear-gradient(var(--rule-soft) 1px,transparent 1px),linear-gradient(90deg,var(--rule-soft) 1px,transparent 1px);
+  background-size:24px 24px; color:var(--ink);
+  font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif; -webkit-font-smoothing:antialiased;}
+.wrap{max-width:1220px;margin:0 auto;padding:28px 20px 64px}
+.mast{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;
+  border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:22px}
+.mast h1{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;font-size:34px;letter-spacing:-.01em;margin:0;line-height:1}
+.mast h1 span{color:var(--eyeR)}
+.mast p{margin:6px 0 0;color:var(--muted);font-size:13.5px;max-width:56ch}
+.stamp{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);text-align:right;line-height:1.7}
+.stamp b{color:var(--ink);font-weight:600}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:3px}
+.phead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:9px 13px;border-bottom:1px solid var(--rule);background:#FAFCFC}
+.eyebrow{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase}
+.phead .hint{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted);letter-spacing:.04em}
+.pbody{padding:13px}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:18px;align-items:start}
+@media(max-width:1000px){.cols{grid-template-columns:1fr}}
+.stage{display:flex;align-items:stretch;overflow-x:auto}
+.stage .screen{background:#000;flex:0 0 auto}
+canvas{display:block}
+#view{image-rendering:pixelated}
+.ribbon{flex:0 0 auto;border-left:1px solid var(--rule);background:#FAFCFC;position:relative}
+.ribbon .cap{position:absolute;top:6px;left:8px;font-family:"IBM Plex Sans Condensed",sans-serif;font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
+.stagefoot{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;justify-content:space-between;padding:10px 13px;border-top:1px solid var(--rule);background:#FAFCFC}
+.readouts{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+.ro{color:var(--muted)} .ro b{color:var(--ink);font-weight:600}
+.ro.bad b{color:var(--eyeL)} .ro.good b{color:var(--eyeR)} .ro.warn b{color:var(--warn)}
+.grp+.grp{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule)}
+.grp>.lbl{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:9px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:7px 0}
+.row label{font-size:13.5px}
+.row .val{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);min-width:56px;text-align:right}
+input[type=range]{width:112px;accent-color:var(--eyeR)}
+input[type=checkbox]{accent-color:var(--eyeR);width:16px;height:16px}
+select{font:12.5px "IBM Plex Mono",monospace;padding:3px 5px;border:1px solid var(--rule);border-radius:2px;background:#fff;color:var(--ink)}
+.seg{display:flex;border:1px solid var(--rule);border-radius:2px;overflow:hidden}
+.seg button{flex:1;font:11.5px/1 "IBM Plex Sans Condensed",sans-serif;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:8px 6px;background:#fff;border:0;border-left:1px solid var(--rule);color:var(--muted);cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--eyeR);outline-offset:2px}
+.note{font-size:12px;color:var(--muted);margin:9px 0 0}
+.note b{color:var(--ink);font-weight:500}
+.flow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));margin-top:18px}
+@media(max-width:900px){.flow{grid-template-columns:repeat(2,1fr)}}
+.step{background:var(--surface);border:1px solid var(--rule);border-left:0;padding:11px 12px}
+.step:first-child{border-left:1px solid var(--rule)}
+.step .n{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--eyeR);letter-spacing:.08em}
+.step h4{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:13.5px;margin:3px 0 5px;font-weight:600}
+.step p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.45}
+.step.gate{background:#FFFBF2} .step.gate .n{color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:600;padding:7px 13px;border-bottom:1px solid var(--rule)}
+td{padding:8px 13px;border-bottom:1px solid var(--rule-soft);font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+tr:last-child td{border-bottom:0}
+.bar{height:5px;background:var(--rule-soft);border-radius:99px;overflow:hidden;min-width:70px}
+.bar i{display:block;height:100%;background:var(--eyeR)}
+.tag{font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:2px;border:1px solid currentColor}
+.tag.run{color:var(--eyeR)}.tag.hold{color:var(--warn)}.tag.done{color:var(--ok)}.tag.fail{color:var(--eyeL)}
+.sect{margin-top:26px}
+.sect>h3{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+
+.insets{display:grid;grid-template-columns:200px 200px minmax(0,1fr);gap:16px;align-items:start}
+.insets figure{margin:0}
+.insets canvas{display:block;border:1px solid var(--rule);background:#111}
+.insets figcaption{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-top:5px;line-height:1.35}
+.insetnote .note{font-size:12px}
+@media(max-width:820px){.insets{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="mast">
+  <div>
+    <h1>Parallax Bench <span>/ phase-locked stereogram video</span></h1>
+    <p>Mockup v19. Scintillation speed is now its own control, independent of the rotation. The trick is that one clock advances both the seed and the pose, so a slow noise rate simply repeats frames rather than holding the pattern still while the object keeps moving — which is what would have leaked. Rotation stays on its own knob, and the pose step per tick is reported so you can keep it under the blades' aliasing limit.</p>
+  </div>
+  <div class="stamp">
+    session <b>propeller · noise 24 Hz · step 3.8°</b><br>
+    target <b>1920×1080 · 4:4:4 · lossless</b><br>
+    host <b>win11 arm64 · numpy path</b>
+  </div>
+</div>
+
+<div class="cols">
+  <div class="panel">
+    <div class="phead">
+      <span class="eyebrow">Viewport</span>
+      <span class="hint">1:1 — merge the two dots above the frame, then let the image resolve behind them</span>
+    </div>
+    <div class="stage">
+      <div class="screen"><canvas id="view" width="900" height="492"></canvas></div>
+      <div class="ribbon"><span class="cap">Δ</span><canvas id="drift" width="88" height="492"></canvas></div>
+    </div>
+    <div class="stagefoot">
+      <div class="readouts">
+        <span class="ro">period <b id="ro-p">130 px</b></span>
+        <span class="ro">separation <b id="ro-s">—</b></span>
+        <span class="ro">step <b id="ro-step">—</b></span>
+        <span class="ro warn">coherence <b id="ro-coh">—</b></span>
+        <span class="ro warn">leak <b id="ro-leak">—</b></span>
+        <span class="ro warn">coverage <b id="ro-cov">—</b></span>
+        <span class="ro">gap <b id="ro-gap">—</b></span>
+        <span class="ro">relief <b id="ro-rel">—</b></span>
+        <span class="ro warn">depth steps <b id="ro-lv">—</b></span>
+        <span class="ro bad">Δ raw <b id="ro-draw">—</b></span>
+        <span class="ro good">Δ shipped <b id="ro-dfix">—</b></span>
+      </div>
+      <div class="seg" style="max-width:200px">
+        <button id="btn-play" aria-pressed="true">Pause</button>
+        <button id="btn-step">Step frame</button>
+      </div>
+    </div>
+
+    <div class="phead" style="border-top:1px solid var(--rule)">
+      <span class="eyebrow">Encoding check</span>
+      <span class="hint">separates "geometry wrong" from "fusion hard"</span>
+    </div>
+    <div class="pbody">
+      <div class="insets">
+        <figure><canvas id="dmIn" width="190" height="99"></canvas><figcaption>Depth sent in</figcaption></figure>
+        <figure><canvas id="dmOut" width="190" height="99"></canvas><figcaption>Depth recovered from the rendered frame</figcaption></figure>
+        <div class="insetnote">
+          <p class="note" style="margin:0 0 9px"><b>Decode</b> pauses the video, correlates each row of the finished frame against itself across the plausible separation range, then inverts the separation formula back to depth. Flat planes come back around 0.88; slanted faces read lower, because a fixed-width window cannot match a stretched copy of itself. On a solid, treat 0.7 as a pass. Compare the pictures rather than the number — if the right panel looks like the left, the geometry is encoded and what remains is a viewing problem.</p>
+          <div class="seg" style="max-width:150px"><button id="btn-dec">Decode frame</button></div>
+          <p class="note" id="dec-stat" style="margin-top:8px">Not run yet.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="phead"><span class="eyebrow">Render controls</span><span class="hint">mockup</span></div>
+    <div class="pbody">
+
+      <div class="grp">
+        <span class="lbl">Subject</span>
+        <div class="row"><label for="c-shape">Shape</label>
+          <select id="c-shape"><option value="prop" selected>Propeller, flat, rotating in plane</option><option value="ball">Ball, bouncing right to left</option><option value="whale">Whale (your 3MF)</option><option value="wedge">Step wedge (calibration)</option><option value="cube">Rotating cube</option></select></div>
+        <div class="row"><label for="c-rpm">Motion period</label><input type="range" id="c-rpm" min="2" max="30" value="4"><span class="val" id="v-rpm">4 s</span></div>
+        <p class="note">Eight blades, 170&nbsp;px long by 40 across, hub 26, 336&nbsp;px overall. Blades merge into a solid core at r&nbsp;=&nbsp;hw/sin(π/n)&nbsp;=&nbsp;52, leaving 118&nbsp;px of each blade free. A run narrower than one separation has nothing to pair with, so the period sits at 44 and the separation at 26 — under the 40&nbsp;px blade width with room to spare.</p>
+      </div>
+
+      <div class="grp">
+        <span class="lbl">Depth budget</span>
+        <div class="row"><label for="c-depth">Depth range μ</label><input type="range" id="c-depth" min="15" max="85" value="70"><span class="val" id="v-depth">0.70</span></div>
+        <div class="row"><label for="c-gap">Gap to background</label><input type="range" id="c-gap" min="0" max="22" value="18"><span class="val" id="v-gap">18 px</span></div>
+        <div class="row"><label for="c-per">Pattern period</label>
+          <select id="c-per"><option value="44" selected>44 px</option><option value="56">56 px</option><option value="36">36 px</option></select></div>
+        <div class="row"><label for="c-quant">Whole-pixel separation</label><input type="checkbox" id="c-quant"></div>
+        <p class="note"><b>Gap</b> is the separation, in pixels, between the wall and the object's rearmost visible point. μ is the whole budget and gap eats into it, so relief reports what is left and how much the current pose uses. The split matters more than the total: a real ball floating in front of a wall has a step to the wall many times larger than its own front-to-back depth, so a gap-heavy split is what reads as detached. A relief-heavy split reads as the wall bulging. Each subject loads its own split — the ball 32/14, the whale 16/29 — because the whale has a shape to be read and the ball does not.</p>
+      </div>
+
+      <div class="grp">
+        <span class="lbl">Phase compensation</span>
+        <div class="row"><label for="c-statictex">Static object texture</label><input type="checkbox" id="c-statictex" checked></div>
+        <div class="row"><label for="c-owntex">Object has own texture</label><input type="checkbox" id="c-owntex" checked></div>
+        <div class="row"><label for="c-lock">Phase lock (per-run anchor)</label><input type="checkbox" id="c-lock" checked></div>
+        <div class="row"><label for="c-seam">Mark invented columns</label><input type="checkbox" id="c-seam"></div>
+        <p class="note">Background phase is assigned, φ(x)&nbsp;=&nbsp;x, not integrated, so drift is not representable. Each run of object pixels is integrated from whichever side has background beside it, with the residual dumped at that run's own right silhouette.</p>
+        <p class="note"><b>Static object texture</b> takes the object's phase from φ(x)&nbsp;=&nbsp;x&nbsp;+&nbsp;(p−s)·floor(x/s) with s snapped to a whole pixel. That satisfies φ(x+s)&nbsp;−&nbsp;φ(x)&nbsp;=&nbsp;p exactly, mentions nothing about where the object is, and is integer throughout, so there is no resampling and nothing to change from frame to frame. It needs the depth to be piecewise constant; a row with any gradual separation change falls back to the chain, which does re-link every frame. Turn it off to see the difference — a third of the object repaints per frame.</p>
+        <p class="note"><b>Own texture</b> gives the object a second noise field — same statistics, same period, uncorrelated with the wall — so its boundary is an occlusion edge rather than a continuation of the wall's surface.</p>
+        <p class="note"><b>Mark invented columns</b> paints the pixels no stereo constraint reaches. They are the leading strip of every blade, one separation wide, and they are why coverage tops out around two thirds.</p>
+      </div>
+
+      <div class="grp">
+        <span class="lbl">Pattern</span>
+        <div class="row"><label for="c-rate">Noise rate</label><input type="range" id="c-rate" min="2" max="48" value="24"><span class="val" id="v-rate">24 Hz</span></div>
+        <div class="row"><label for="c-drift">Noise drift</label><input type="range" id="c-drift" min="0" max="20" value="0"><span class="val" id="v-drift">off</span></div>
+        <div class="row"><label for="c-hold">Pattern reseed</label><input type="range" id="c-hold" min="0" max="4" value="1"><span class="val" id="v-hold">every frame</span></div>
+        <div class="row"><label for="c-color">Color wallpaper</label><input type="checkbox" id="c-color" checked></div>
+        <div class="row"><label for="c-scroll">Vertical drift</label><input type="range" id="c-scroll" min="0" max="40" value="0"><span class="val" id="v-scroll">off</span></div>
+        <div class="row"><label for="c-hue">Hue cycle</label><input type="range" id="c-hue" min="0" max="30" value="0"><span class="val" id="v-hue">off</span></div>
+        <div class="row"><label for="c-tint">Surface tint</label><input type="range" id="c-tint" min="0" max="100" value="0"><span class="val" id="v-tint">0 %</span></div>
+        <p class="note"><b>Noise rate</b> is the tick rate, and one tick advances both the seed and the pose. Between ticks the frame is repeated byte for byte, so slowing the scintillation down does not expose anything — nothing moves during a hold either. That is what makes the speed independent of the rotation: the pose step per tick is 360° ÷ (period × rate), reported as <b>step</b>.</p>
+        <p class="note">Watch that step against the subject's own symmetry. Eight blades repeat every 45°, so a step over 22.5° aliases and the propeller starts turning backwards — the wagon-wheel effect. The readout flags it.</p>
+        <p class="note">A pixel crossing the silhouette jumps a whole gap in phase, so it decorrelates completely. For that to be unremarkable, every other pixel must decorrelate completely on the same tick — no temporal correlation anywhere, at any lag or any shift. <b>Reseed hold</b> above 1 breaks that on purpose by letting the pose tick on while the seed sits still.</p>
+        <p class="note"><b>Noise drift</b> translates the field rigidly instead. It is kept only as the counter-example: it passes the leak meter at 1.00× and is still wrong, because a uniform flow field is something the silhouette can stand out <em>against</em>. The <b>coherence</b> readout is what catches it — the largest frame-to-frame cross-correlation of the wall over any horizontal shift. Scintillation reads a few percent; a drift of 5&nbsp;px/frame reads near 100% at −5&nbsp;px, and a reseed hold reads near 100% at 0.</p>
+        <p class="note">Drift and hue are redundant once refresh is on. Tint stamps the silhouette at every pattern repeat, which is why it starts at zero.</p>
+      </div>
+
+      <div class="grp">
+        <span class="lbl">Encode</span>
+        <div class="row"><label>Codec</label><select><option>FFV1 / MKV (lossless)</option><option>x264 4:4:4 qp 0</option><option>PNG sequence</option></select></div>
+        <p class="note" style="color:var(--warn)"><b>Guard active.</b> 4:2:0 and crf &gt; 12 are refused: chroma subsampling averages the very pixel pairs that carry the depth. A reseeded field also has no temporal redundancy at all, so every frame costs a full intra frame. Measured by gzipping one: 62&nbsp;KB colour, 17&nbsp;KB in black and white, which extrapolates to roughly <b>60 and 16&nbsp;Mbps at 1920&times;1080</b>. Classic dynamic stereograms are two-tone for exactly that reason.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="sect">
+  <h3>How a frame moves through the tool</h3>
+  <div class="flow">
+    <div class="step"><span class="n">IN</span><h4>Import</h4><p>3MF / OBJ / STL mesh, 16-bit depth PNG sequence, EXR, or a procedural primitive. Meshes are decimated to a triangle budget on import.</p></div>
+    <div class="step"><span class="n">01</span><h4>Depth normalize</h4><p>One depth mapping for the whole rotation, gap subtracted from the μ budget. A per-frame fit is refused: it makes a rigid solid breathe.</p></div>
+    <div class="step gate"><span class="n">02</span><h4>Fusability audit</h4><p>Coverage, spatial grain, the leak ratio, and the coherence of the wall between frames. Magnitude alone is not enough — a coherent flow field passes the leak test and still gives the shape away.</p></div>
+    <div class="step gate"><span class="n">03</span><h4>Phase audit</h4><p>Δ per row per frame, before any pixel is written. Rows over the band budget are flagged, not silently bent.</p></div>
+    <div class="step"><span class="n">04</span><h4>Bake row pass</h4><p>Dual-anchor phase integral, occlusion mask, fractional wallpaper lookup. Loop over x, vectorized over y.</p></div>
+    <div class="step gate"><span class="n">05</span><h4>Decode check</h4><p>Every hundredth frame is decoded back to depth and compared against the input. A falling match ends the run.</p></div>
+    <div class="step"><span class="n">OUT</span><h4>Export</h4><p>MKV / MP4 / PNG sequence, plus sidecar JSON with period, separation, target pitch and viewing distance.</p></div>
+  </div>
+</div>
+
+<div class="sect">
+  <h3>Render queue</h3>
+  <div class="panel">
+    <table>
+      <thead><tr><th>Job</th><th>Frames</th><th>Relief</th><th>Compensation</th><th>Max Δ</th><th>Decode match</th><th>State</th></tr></thead>
+      <tbody>
+        <tr><td>prop_scint</td><td>96</td><td>0 px</td><td>reseed per frame</td><td>0.0 px</td><td>0.81</td><td><span class="tag run">Baking</span></td></tr>
+        <tr><td>prop_drift5</td><td>96</td><td>0 px</td><td>drift 5 px/frame</td><td>0.0 px</td><td>0.81</td><td><span class="tag fail">Blocked — coherence 99% at −5 px</span></td></tr>
+        <tr><td>ball_edge_exit</td><td>384</td><td>29 px</td><td>frame-edge anchor</td><td>47.3 px</td><td>0.84</td><td><span class="tag fail">Blocked — anchor lost on edge contact</span></td></tr>
+        <tr><td>whale_raw_96k</td><td>384</td><td>35 px</td><td>dual anchor</td><td>0.0 px</td><td>—</td><td><span class="tag hold">Held — 95,686 tris over budget</span></td></tr>
+        <tr><td>cube_16s_v3</td><td>384</td><td>7 px</td><td>dual anchor</td><td>0.0 px</td><td>0.44</td><td><span class="tag fail">Blocked — relief below floor</span></td></tr>
+        <tr><td>wedge_cal</td><td>1</td><td>35 px</td><td>dual anchor</td><td>0.0 px</td><td>0.88</td><td><span class="tag done">Done</span></td></tr>
+        <tr><td>cube_9s_nolock</td><td>216</td><td>35 px</td><td>none</td><td>56.7 px</td><td>0.70</td><td><span class="tag done">Done — reference</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script>
+(()=>{
+const W=900,H=470,TOP=22;
+const view=document.getElementById('view'),vx=view.getContext('2d');
+const dc=document.getElementById('drift'),dx=dc.getContext('2d');
+const dmIn=document.getElementById('dmIn').getContext('2d');
+const dmOut=document.getElementById('dmOut').getContext('2d');
+const img=vx.createImageData(W,H);
+const el=id=>document.getElementById(id);
+const S={shape:'prop',rpm:4,per:44,mu:0.70,gap:18,statictex:1,rate:24,hold:1,drift:0,quant:0,lock:1,seam:0,owntex:1,
+         color:1,scroll:0,hue:0,tint:0,play:1};
+
+const zbuf=new Float32Array(W*H);
+const prevLum=new Float32Array(W*H),curLum=new Float32Array(W*H),prevMask=new Uint8Array(W*H);
+let prevOK=0,lkW=-1,lkX=-1,cohHold=0,cohD=0,lastTick=-1;
+const phiL=new Float64Array(W+1), phiR=new Float64Array(W+1);
+const sepr=new Float32Array(W),psrc=new Int32Array(W),pfrac=new Float32Array(W),discp=new Int32Array(W);
+const driftRaw=new Float32Array(H);
+const lut=new Uint8Array(768);
+let noise=null,noiseB=null,nPer=0;
+/* Dynamic random-dot stereogram: the whole field is re-drawn from a new seed
+   every frame, so nothing monocular survives - no static form, and no motion
+   at the silhouette either, because a pixel crossing the edge changes exactly
+   as much as every other pixel in the frame. The disparity still holds inside
+   each single frame, since both members of a pair read the same seed, the same
+   row and the same phase.                                                    */
+let nSeed=-1,seedCtr=0;
+function buildNoise(seed){
+  if(nPer!==S.per){nPer=S.per;
+    noise=new Uint8Array(nPer*512); noiseB=new Uint8Array(nPer*512); nSeed=-1;}
+  if(seed===nSeed)return; nSeed=seed;
+  const sa=(seed*2654435761)>>>0, sb=(seed*1597334677+0x9E3779B9)>>>0;
+  for(let u=0;u<nPer;u++){const bu=u*512;
+    for(let y=0;y<512;y++){
+      let h=(u*374761393)+(y*668265263)+sa; h=(h^(h>>>13))*1274126177;
+      noise[bu+y]=((h^(h>>>16))>>>0)&255;
+      let g=(u*2246822519)+(y*3266489917)+sb; g=(g^(g>>>15))*2654435761;
+      noiseB[bu+y]=((g^(g>>>13))>>>0)&255;}}
+}
+function rgbFromHSL(h,s,l){h=((h%360)+360)%360;const a=s*Math.min(l,1-l);
+  const f=n=>{const k=(n+h/30)%12;return 255*(l-a*Math.max(-1,Math.min(Math.min(k-3,9-k),1)));};
+  return [f(0),f(8),f(4)];}
+function buildLut(hueSh){for(let n=0;n<256;n++){
+  if(S.color){const c=rgbFromHSL(n/255*360+hueSh,.62,n>127?.74:.32);
+    lut[n*3]=c[0];lut[n*3+1]=c[1];lut[n*3+2]=c[2];}
+  else{const v=n>127?238:24;lut[n*3]=v;lut[n*3+1]=v;lut[n*3+2]=v;}}}
+
+/* ── geometry → raw depth in zbuf, 0 = background ─────────────────
+   Whale: 3MF from the user, 95,686 triangles decimated to 2,910 by
+   vertex clustering on a 2.2 mm grid, quantised to int16 and inlined.
+   No backface culling: clustering leaves the winding inconsistent in
+   places, and culling punched holes through the body.                */
+const MESH="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0wAyADMAVAFTAcgAUwHHAMgAZwFmAV8BYAFnAV8BYAFfAVkBWgFgAVkBVAFaAVMBWgFZAVMBkQIjAiECkQIhAo8C5wD0AOgAHwIhAsYBIQLIAcYBiwKNAh0CEQORAo8CDwMRA48CDQMPA40CxgHIAVoByAFgAVoBCwONAosCEwORAhEDrgMPAw0DsAMRA64D0wBCAN4AJQLMAcoBGwLEAcEBIwIlAsoBFQOVAhMDygHMAW0BygFtAWcBwQFUAU4BiAKLAhgCiwIbAhgCCwOLAogCqQMNAwsDrAMNA6kDFASwA64DEQSuA6wDEQQUBK4DFwSwAxQElQKXAiUCCwOIAggDJQInAs8BpgMLAwgDqQMLA6YDtQMVA7IDFwQaBLIDFQMYA5cCEQRhBBQEYQQRBF4EzwFyAW0BvQHBAU4BGAIUAoUChQKIAhgCGgQdBLIDDgSpA6YDCwQOBKYDXgQRBA4EFAK9AboBGAK9ARQCGAMVA7UDngOjAwMDowMGAwMDowOmAwgDFwRmBBoEGAOaApcCvgG9AUsB0gHTAc8BugG9AbsBmgIrAioCBwSmA6MDHQQeBLUDGgQeBB0EVwQOBAsEVwRbBA4EpwRjBGEE3gDoAN8A0wDeAN8A1ADTAN8AwADIAMkAvwDIAMAATgG/AMAATwFOAcAAcgF1AXMB0wHSASoCKwLTASoCFAK6AbsBhgIUAhUChQIUAoYCGwObApoCggIDA4ECAwOCAgQDuQMZAxgDuQO4A7UDIAS1Ax4ECAQLBAcECAQHBKMDDAQLBAgEZgRnBBoEWwRXBFgEXARfBFsEZwRjBGQEqgRkBGMEpASoBF4EqASqBKcEqASnBGEESwFOAU8BuwG+AUYBmwItAisCnwMDAwQDWAQLBAwEmwKdAi0CuwMbAxkDuwMZA7kDrQRnBKoETwHAALoAGwOdApsCWAQMBAgEEAIVArYBUwRYBAgErQRpBGcEmAOfAwQDIwS7AyAEnQShBFwErQSwBGkE1ADfADQA/gIEA4IC7wSoBKQEQwDpAFMA3wDpAEMALQIvAtgBnQIvAi0CggIVAhACggKGAhUCvgMdAxsDvgMbA7sD7wTzBKgEUwDpAGEA6APxA4cDhwN7A+gDRgFLAboAtgFGAUEBHQOgAp0CbAQjBCAEtARsBGkEsAS0BGkE6ASkBKEE9gStBKoE8wT2BKoE7ASkBOgERgG6ALUACwIQArYB3QPoA28DIwS+A7sDTwRTBAMEUwSZBFgEnQRYBJkEJgA0ACcAsQG2AbIBDAIQAgsCggIQAgsC0gJvA9kCHQMhA6ACJwS+AyMEQwBTAEQAyQAmACcAyQAnAB0AtgC6ALsAtgC1ALoAtgBGAbUARgG2AEcBRgFHAUIBQQFGAUIBtgFBAUIBsgG2AbcBLwIzAtgBMwLZAdgBCwIQAhECfQKCAgsCoAKhAi8C5QLmAtkCYwPSAtMCIQMiA6ACYwPTAmQDJwQoBL4DJAQoBCcEJAQnBCMEJAQjBHAEUAQDBE8EtARtBGwEsAS1BLQE+gSwBK0E9gT6BK0ERABTAFQANAA1ACcAuwDAAMEAugDAALsAtgFCAbcBDAKxAbIBDAILArEBMAIzAi8CoQIzAjACoQIwAi8CfgJ9AgwC0wLZAtoC0wLSAtkCoQKgAiIDHgMiAx0DIgMhAx0DcANjA2QDiAOHA/EDvwMiAx4DvwMeAx0D6QPyA+gD8gPxA+gD3gPpA28D6QPoA28DmQOgA58DvwO+AygEBASfA6ADAwSfAwQEUARPBAQEUARTBE8EUARUBFMEbQRxBGwEtQRtBLQEVASaBJkEsQS1BLAEmgSeBJ0EnQSZBJoE5ASdBJ4E7QTsBOkE9AT3BPME8AT0BPME8ATzBO8EowIzAqEC6QN8A/IDfAOIA/IDwQMiA78DuARtBLUEFQDBAB0AuwDBABUAdAQoBHEEuARxBG0EmgRUBFAERwG2AEIBOgGyAUIB8ALmAogDowKhAiIDJQOjAiIDKATBA78DmgRQBJQE+gT+BLEE/gS1BLEEQQXwBO0EQQX0BPAEQgG2AK0A3gTkBJoE5ASeBJoEOgVBBe0ERgX0BEEFZAPTAs4CKwTBAygESgRQBP8DOgXtBOkEpgI2AqMCWQNkA84CMwU6BekEtgC7ABUAeAJ+AgYCfgIMAgYCfAPmAogD/wJ+AvkCxQMlAyIDwQPFAyIDOgFCATsBuAR0BHEE/gS4BLUESwX6BPcEYgBjAFUAVABiAFUAFQAWAAsAtgAVAAsAtgALALcAOwFCAUMBBgIMAgcCeQJ4AgcCeAIGAgcC2wLaAuYCzgLTAs8CpwKmAqMCJQOnAqMCfQOIA3wDZQNkA1kDmQP/AvkC3wPpA94DwQPCA8UD/wOZA5oDLATBAysEdAQsBCgESwRQBEoEvAR0BLgE3wTkBN4ESwVQBfoEKgUzBeQEQgVGBUEFRABVAEUANQBEAEUAHgAnACgAHQAnAB4AbABzAHQAFQAdABYADAALABYAtwALAAwArgC2ALcAQwGtAK4AswGyATsBrAGyAbMBBwINAgwCaALaAtsC1ALTAl8CpgI3AjYCpwI3AqYC2wLmAucC0wLUAs8CWQPOAs8CJQMqA6cC+QJ4AnkCWgNZA88C+gL5AnkCJgMqAyUD/wL5AvoCmQP5AvoCcQPeA3AD6gPpA98DxgMmA8UDkwOZA/oCxgPFA8IDmgOZA5MDxgPCA8EDwgPBAywEdQQsBHQEdAS8BHUEuQS8BLgEmgSUBJUE3wTeBJoE5QTkBN8E5QQqBeQEUQX6BFAFNAUzBSoFOwVBBToFOwVCBUEFKAAnADYAbAB0AG0AfQPnAnwDfQPpA+oD3wPeA3EDSwT/AwAElQRQBEsE3wSaBJUEOwU6BTQFVgLPAl8CzwLUAl8C+QMABJoD+QOaA5MD3wSVBNcEpwKqAjcCqgI5AjcCUQX/BPsE3wN9A+oDLAQwBMIDVwX/BFEFrAE7ATEBrAGzATsBMATGA8IDIQXlBN8EKgXlBCEFOQLkAeEBcQN9A98DrgC3AAwAOQI8AuQBUQNaA88CUQPPAskCqgI8AjkCKgOqAqcCLAQxBDAEvATBBHUEwQR5BHUEgwVCBTsFewWDBTsFpQCuAK8AaQJfAmgCyQLPAlYCqgKuAjwCKwMqAyYD3wNxA9YDKwMmA8YDegQsBHkEwQR6BHkEjQRLBEwECgW8BAQFIgUhBd8EewB/AIAAPAGkAKUAPAE7AaQAMQE7ATIBPQLlAeQBYAJWAl8CygLJAk8CrwI9AjwCeQIHAv8BrgKvAjwC2wLnAugCqgKvAq4CcQJ5AnACqwKvAqoCegJ5AnECMAOrAqoCWwNmA2UDZQNaA1sDywMrA8YDxwPLA8YD+gP5A5MDMAQxBMYDLQQsBHoEwgR6BMEEvQTBBLwE2ATfBNcEAAUEBf8EWAX/BFcFKwU0BSoFhAWDBXsFfAV7BTsFfAWEBXsFdQB6AHsAFwAWAB8AFgAeAB8ADQAWABcADAAWAA0ArgAEAK8APQI/AuUBTwJWAlcC/wEHAggCUgPJAsoCWwNaA1IDMQMqAysD6wN+A98DfgN9A98DlAOTA/sCMQTHA8YD+gOTA5QDQgT5A/oDjgSNBEwEvQTCBMEE2ASVBI4EBQULBQQFBQUEBQAFKwUqBSIFKgUhBSIFWAVXBVEFKwU1BTQFTQVSBUwFdAV8BTsFNQV0BTQFdAU7BTQFegQxBC0E/wEIAq0BrwKzAj0C+wJ6AnEC2ASOBNAEPwLqAecB/wGtAaQBPwI9ArMCIgXgBNgEPwJCAuoBjgRMBEMEGgUiBdgEkwVSBU0F+wLyAowDlAP7AowDfwQxBHoEmgVSBZMFPAGlADIBuAJCAj8CdAU1BSsFQgJGAuoBRgLuAeoBWAJXAmACagJpAtwCOAM5A68CMgMxAysDXANmA1sD+gOUA4wDfQWEBXwFpgClAK8ApAGtAaUBQgJHAkYCYQJgAmkCTwJQAkwCSwJPAkwCxALKAksCygJPAksCxAJLAkwCcQL/AQACuAK5AkIC6QLdAugC3QLcAugCswK5ArgCOQOwAq8C8wJxAnIC8gJxAvMCUwNbA1IDMgM5AzEDUwNcA1sDZwPXA2YD4QPrA+ADjAPyAo0DMgTHAzEE9AP6A4wDegSABH8EwgR7BHoEhwSGBEMEhwSOBIYEvQTDBMIEDAW9BAsF2QTYBNAEmwVSBZoFKwVvBW4FdQV0BW4FDgAXABgADQAOAAUAsACvAAUAMgGlAJ8AMwEyAZ8ApQEyATMBAAKkAaUBUAJPAlgCWAJgAmECYQJpAmoCQwJHAkICagLcAt0CuQJDAkICywLKAsUCywJTA8oCUwNSA8oCfwN+A+sD4QN/A+sDZwPYA9cDzAMrA8sDzAPLA8cDMgQxBIAEQwT6A/sDgAQxBH8ERARDBPsD0QSOBI8E0ASOBNEE0QTZBNAEDAULBQUFGwUaBdkEWAVhBWAFUwVZBVIFUwVSBZsFlAWaBZMFlAWTBY0FfQV8BXUFfAV0BXUFhQWNBYQFpgCvALAApQEzASwBvAJHAkMCZwNmA1wDMgTMA8cDRwJJAvIBOQO0ArACYQUMBQYFcgN/A+EDEgXDBAwFOATMAzIEAACmAAUA0QSPBIcEZwUMBWEFhgWNBYUFTQNTA8UCOAQyBDMEWgVhBVkFbwUsBSMFlwCPAJYAMwGfAKAApQEsAS0B9wFQAvsBAQIAAqUBxgLFAsAC8wJyAnMCVANTA00DVANcA1MDcwN/A3IDgAQzBDIEPgREBD0EYgVhBVoFiACPAJAABgAOAA8ApwCmAAEAnwCmAKcANAEzAaAALAE0AS0B+wFQAvwBawLdAt4CawJqAt0C3gLdAukCgAPqAukCRwO9ArwCRANHA7wC9ALzAnMCPwNDAz4DPwM+AzkDVANdA1wDcwNyA+ED4gNzA+EDMwMyA9MD0wPSA8wDOQTNA8wD9AONA44DPQT0A/UDygSBBIAEiASHBEUEygSABMkEiATNBIcEzQTRBIcEEwXEBMME2QTRBNIEZwVoBQ0FDQUMBWcFIwVwBW8FcAV1BW8FAQAAAAYA+AH3AfwBcwJyAgECcgIAAgECxgJOA8UCTgNNA8UCMwM6AzIDaAPZA9gD0wPMA80DMwQ5BDgEDQUTBQwFFwUcBdIEjgWVBZQFjgWUBY0FhgWOBY0FRwNKA70CSgPBAr0CcwPeAoADYgLeAtUCgQQ5BDMEBgAPABAAAgABAAYAqACgAKcAoQCgAKgAHQUkBRwFfgV2BTwFdgU2BTwFkACKAIkAlwCcAJgApwABAKgAJgEgASUBIAEfASUBKgGdAZ4BNQE0AaEANAGgAKEApwGmAS4BpgEtAS4BWgJZAmMCWQJiAmMC1gJiAtUC1gLeAt8C1gLVAt4C9QJzAnQC9AJzAvUCSANLA0oDSANKA0cDRQNIA0cDRQNHA0QDTwNUA04DRQNEAz8DQANFAz8DOwM/AzoDaANpA3MDMwM7AzoD9gOOA48DOgTNAzkE9QOOA/YDOgQ5BDMEggQzBIEEggSBBMoERQQ+BEYExQTKBMQExQTEBBMFzgTNBIkE0gTNBNMELgU3BTYFLgU2BS0FPAU2BT0FcQUuBS0FcQUtBXAFnQWhBZwFdgV+BX8FlgWVBY4FjwWWBY4FhwWPBYYFBwAGABAAAgAGAAcAnQCcACAB9AGiAfMB/QFRAlICAgIBAqcBAQKmAacBUQJZAloCYgLWAmMCdAJzAgICcwIBAgICdANzA2kDQAM/AzsDggTKBMsEywTKBMUEFAXFBBMF0wTNBM4EFAUNBQ4FGAUdBRwFJQVrBSQFogVaBaEFJQVsBWsFbAVxBWsFcQVwBWsFkACRAIoAUgJRAloCOgTOA80D9AGiAfkBnQAmASABmQEqAZ4BdwV/BT0FdwU3BS4FcQV3BS4FkQCYAJkAmACdAJ4AAwAHAAgAqAACAAMAnQAgASEBLgE1ATYB9QH0AfoB+gH0AfkB+gH5Af0BUwL+AVIC/gH9AVICQQNFA0ADOwM8A0ADkAOPA/YCjwP1AvYCzgPVA9QDzwPOAzoE9wP2A5ADgwSCBMsEFAXGBMUEigTOBIkEDgUVBRQFDwUOBWkFHgUdBRgFXAVjBVsFcgV4BXEFlwWdBZYFgAWIBYcFgAWHBX8FkgCLAJEAmQCYAJ4AIQGeAJ0AqAADAKkAJwEhASYBJwEmASoBKwEnASoBKwEqAZoBmgGeAZ8BLwEuATYBnwGeAaMBogH0AfUB9QGjAaIBpwEuAS8BqAGnAS8BdQICAgMC9gL1AnQCUANPA0sDRgNFA0EDQQNAAzwDVgNfA1UDXwNeA1UDNQM7AzQDXwNqA14DagNpA14DNQQ6BDQEgwQ1BDQEzASDBMsEigRGBEcEzwTOBIoEDwUVBQ4FHgUYBRkFXAVkBWMFJgVsBSUFowVcBaIFbQVxBWwFngWiBZ0FngWdBZcF+gH9Af4B9gJ0AnUC2gN1A2oD4wN1A9oDzwPVA84DagUPBWkFTAPHAlAD6wLgAoEDHgUZBdQEnwGjAfUBRgO+AkkDJgVyBW0FAwAIAKkA8AGfAfUBugK+AkYD2gQeBdQEJwErAZMBkwErAZoBTQL6AVMCmQCeACEBkATUBIoEsQAIAAkAqQAIALEAqQCxAKoAIgEhAScBowCiAKkAkwGaAZsBmwGaAZ8BqAEvATABBAIDAqgBbQJsAuACPAM9A0ED5AN1A+MDNgQ7BDUEeQWABXgFEQASAAkACQAIABEAkgCZAJMAGwGaAJkAGwEhASIBKAEnAZMBqAEwAakB8AH1AfEBBAKoAakBTQJTAlQCTgJNAlQCUwJbAlQCZQJkAm0CdQIEAnYCdQIDAgQCwwLHAsICuwK+AroCtgK6ArUCQgO2ArUCQgO1AkEDdQJ2AvcCQgNBAz0DggOBA3UDdgOCA3UDawNqA18DNgM1A88D2wNqA2sDkQOQA/cCkAP2AvcCQQRABPgDQAT3A/gDRwRABEgEZQVkBVwFXQVlBVwFMAVyBS8FngWfBaMFeQV4BXIFmAWXBZAFmAWQBZEFgAWJBYgFiwCDAIIAKAEiAScBKAGTAZQBNwGiAKMANgGiADcB7AGgAfEB9gHxAfUBVAJbAlwC4QLgAuwCuwK6ArYCggPsAoED2wPkA+MD4wPaA9sDEAUPBWQFXQVcBZ8FMAVzBXIFnwWeBZgFeQWBBYAFgQWJBYAFsQAJAKoAmwGgAewBSAJKAsMCvwJIAsMCLQM2A9ADSAT4A/wDBwUQBWUFIgEoAZQB8QH2AUoC8QFKAkgCPQO2AkIDyAPQAzwEqQEwATcBuwJIAr8CjwEoAZQBqQE3Aa4BRAJIArsCsQK2Aj0DNwGjAKoA6AGbAewByAJUAswClAGbAegBtgJEArsCFQGTABsBNwGqAD0BtgJAAkQC0QPQA8gDhACDAIwACQAKALIAHAEbASIBqQGqAQQCNgOxAj0DvgTIBMcEjQCMAJMAFgGTABUBFgEVARsBIwEcAY8BHAEiAY8BkAGPAZQBrgE3Aa8B6QHsAe0BRQLtAUQCBAKqAQUCQQJFAkQCVAJcAl0CBAIFAncCdwJ2AgQCzAJUAs0CsgK3ArYCsgK2ArECgwPtAoID7QLsAoIDLgM3AzYDLgM2Ay0D3APlA9sD5QPkA9sDfASFBIQEfQR8BMcECAUHBWYFTgVVBZ8FOAV5BTAFmQWYBZEFegWBBXkFEwASABoAEgAZABoAhACMAI0AlACNAJMAqwCqALIAPQGqAKsAIwGPAZABkAGUAZUB6QGUAegBqQGuAa8BVQJUAl0CZgJlAm4CZQJtAm4CbgJtAuICbQLhAuICzQJUAlUCtwJBAkACtwJAArYCsgKxAqwCrAI2AzcDgwOCA+wD7QODA+wD5QPtA+QD7QPsA+QDhQQ3BIQEfQSFBHwEvwS+BBAFEQUQBQgFZgVlBV0FXgVmBV0FTgWfBZgFkgWZBZEFggWBBXoFHAEjAZABOAE3AT4BLgPQA9EDTgWYBZkFBQKqAQkCqgGvAQkCsgJBArcCPgE9AasA5gGQAekBsgI+AkECLgSFBH0EAQUIBWYFPgLmAekBPgLpAUECewJ3AgUC5QODA+0DXgUIBQEFzQJVAl0CewIFAgkCrAI+ArICSAVOBZkFSAWZBZIFrAI6Aj4CLgOoAqwCLgOsAjcDvwR9BMgEQwWSBYoFhgEWARwBSAWSBUMFuACyABMAOwLmAT4CdwPlA2wDqwCyALMAOAE+AT8BOAE/AbABsAGvATgBOwI+AjoCrQI6AqwCCQIKAnwCfAJ7AgkC4wLiAu0CzQLQAtECLwOpAqgCLwOoAi4DhAPtAoMDKAMnA8kDlgP8ApcDfQQvBC4EdgR3BL8EugS/BAgFCQW6BAgFXgUCBQEFSQVOBUgFRAVDBT4FbwB2AHcAdgB9AHcAGwAgACEAGgAgABsAfgCEAIUAfQCEAH4AhQCNAA0BsgC4ALMAqwCzAD8BiwGKAeMBsAE/ATkB4wHmATsCZwJdAmYCbwJuAuMCOwI6Aq0CKAMvAy4D5gN4A+UD/AL9ApcDygPJAzcELwTKAzcEdwR+BH0EwAR3BHYEAQUCBQkFCQUIBQEFVgVfBV4FVQVPBVYFPwU+BTgFOQU/BTgFPgU/BUQFEgEWARcB0QJdAl4CtAE5AT8BsAE5AbQBqQI7Aq0C/AQCBVYFEgEXAYcBXgJnAtECggESAYcB0QJnAtcC4AGHAeMBOALjATsCKAOpAi8D5gOEA3gDdwQvBH4EfgCFAA0BuAAUABsA4AHjATgCAgW6BAkFZwJvAuMC1wJnAuMCpAKpAigDdwTABLoEuAAbALwAeAPuA+YDwwMoA8oDAgW2BAkFtgS6BAkFTwX4BFYFCgIOAnwCcgR3BLoEDQESAX4BfgESAYIBpAI0AqkCfwJ8Ag4CRwBGAFcARgBWAFcAZQBkAG8AGwAhABwAswC4ALkAtAE/AbUB3AHdAeAB0QLXAtgChAOKA4kDwwMkAyMD+AT5BPwESgX4BE8FOQXrBD8F6wTuBD8FPwVABUQFKgApADcAHAAhACIAdwB+AAYBuQC4AL0ACQENAQoBCgENAQ4BtACzALkARAG0AEUBRAGzALQAfwGCAYMBPwFFAUABDgK0AQ8CtAG1AQ8CpQI1AqQCDgIPAoACgAJ/Ag4C2ALXAuQC1wLjAuQC4wLuAuQC5ALuAu8CpQKkAikDbgNiA9gCYgPRAtgCJAMpAygDJAMoAyMDeQPnA3gDxAMkA8MDxAPDAy8EKgTEAy8EKgQvBCkEeAQqBHcEKgQpBHcEcgRzBHcEuwRzBHIEuwRyBLoEtwS6BLYEAwUCBfwE/QQDBfwESgX1BPgE9QT5BPgESgVPBUkFSgX1BEkFPwXuBEAFRQVKBUkFbwB4AHAADgENAX8BRQG0AEgBtAC5AEgB3QGDAdwBtQFAAUUBtQE/AUAB7wOFA+4DcwR4BHcEtwS7BLoEtwQCBQMF/QT8BPkEQAXxBEUFvQAiAMIAHAAiAL0ACgEOAX8BsgS3BP0EfwGDAdoB7wLxAooDwAMkA8QDJQQqBHMEcwS7BLcEcAB4AAABAAF4AAYBCgF/AXoBogI1AqUC7wPzA4UD8wOKA4UDMQI1AqICHwMkA8ADMQLaATUChQPvAooDZQBwAAABgAIPAhICbgPYAnkD9gBlAAABuQC9AEgBHwOiAiQDJQS8A8ADsgRuBLcEogTuBOsEygAqADgASAG9AEwBuAFFAUgBagRuBLIE9QSuBPkEnwIxAqIChQPvA3kD7wOKA/MDogSlBO4E9QSsBKsEpQSmBO4E1gA4AEgA6gBXAPYAVwBlAPYAywDKANYAygA4ANYAAQEAAQYBTAG9AE0BSAFMAU0B1wF6AdYBSAFJAbwBuAFIAbwB1wHWAdoBEwISAhcCEgIWAhcCgwISAoQCegOFA4YDeQOFA3oDhgOFA4oDvQMcAx8DhQOLA4oDhgOFA+8DJQS9A7wDJgS9AyUEIgQlBCEEIgQhBG4EswRqBLIErgSvBLIE7gSmBKkE7gSpBPEE6wDqAPYA6wD2APcAvgC9AMMAdAEGAXcBdAEBAQYBTQG9AL4AewF6AdcBnwIuAjECnwKiAp4CgAKDAoQCHAMgAx8DbwQiBG4EawRvBG4EawRqBLMEswSyBK8ErwSuBKwEowSmBKIEwwDCAMsAAgOEAgUDogOdAwIDugO9AyYEIgS6AyYE1AF3AdcBawQfBG8EHwQiBG8EawSzBK8EaARrBK8EuQG8ARcCHAOcAp8CHAOfAiADUAFNAcMAvAFJAU0BnAIuAp8CLAIuApwCdAF3AdQBvAFNAb8BZQRoBK8EZQSvBKwE0AF0AdQBHwS2A7oDHwS6AyIEqQRlBKwEmAKcAhwDWgQNBF0EDQQPBF0EYARiBKYEmAIcAxoDvwFNAVABGQK8Ab8BpwMHAwkDGAQbBGgEZQQYBGgEbgF0AdABKAIsApgCFwIZAokCCQOHAokCswO2Ax8EGwSzAx8EXQQPBBIEUAHDAFEBwwG/AcIBGQIaAokCCQMKA6cDtwMXA7YDtAO2A7MDpwOrA6oDFQQWBBgEFgQZBBgEFgQVBGIE4ADrAOEAywDWANcAzADLANcAwwDLAMwAUQHDAMQAwgFQAVEBwgFRAcMBzgHNAdABGQK/AcAB0QHQASkCGQLAARoCiQIaAooCKQKYApkCFwOWApgCCQOKAgoDFwMWA7YDCgMMA6gDFAMXA7cDqAMMA6sDHAS0A7MDsQO0AxwEGQSxAxwEYAQTBBYExADDAMwAxABVAVEBzgHRASYCEwSrA60DWADhAOwASQDhAFgAVQHEAMwAwwFRAcUBUQFVAcUBigIaAowCGgIcAowCJgKZApYCFAOWAhcDrQOvAxYEEwStAxYErwMZBBYEaAFvAc4BaAHOAcsBywHOASQCJALOASYCqwMMAw4DEgO0A7ED1wDhADkAzADXADkAwwHFAR4CHALDAR4CDAOMAg4DDgMQA68DYQFoAckBVQFbAccBxQFVAccBWwHJAccBlAIUAxIDDgOOAhADjgKQAhADEAOQAhIDOQDhAEkAKwDMADkAIgIkApQCkAIgApICIAIiApICjgIeApACOQBJADoASQBKADoALAArADkAcAH4AG8BzADNAFUBaQFvAWgBLAA5ADoA+QD4AHABVgFVAc0AXAFbAVYBcAH6APkALAA6ADsAcQFwAWkBXQFiAVwBaAD5APoAcQH6AHABYwFqAWIBagFpAWIBXQFjAWIBOwBKAEsAagFxAWkB7QD6AGoBXQHiAGMBcQBoAAIB2ADiAF0B4gDjAO0AOwBLAEwAPAA7AEwALgAtADwALQA7ADwA7QD7APoAAwFyAAIBcgBxAAIB4gDZAOMA2QDPAC4A4wDkAO4AagBcAGkAPABMAE0AagBpAPsA7wD8AO4A5ADjANkAPQA8AE0AagD7APwA2gA9AOQAagD8AFwATQDkAD0AXADvAE0A0ADbAD4A0AA+AC8A8ABdAOUAMAAvAD4A0QDQAC8AMAA+AD8AIwAvADAA5gDxAPAAXgFlAeYAXgHmANwAXgBQAE8AMAA/AEAAMQAwAEAAXwBeAPEA8gBfAPEAxgDFACMAxgAjACQA0gBYAdEAZQHyAOYAUgFYAcYAJAAxADIAxwDGACQAxwAkACUAUwFSAccAMgAxAEEAbAHzAPIAQgBBAFEAxwAlAMgAbAH0APMAjwIhAh8CyAAlADMAbQH0AGwBZwFtAWwBZwFsAWYBjQKPAh8CjQIfAh0CkQKTAiMCMwBBAEIAIQIjAsgBxAEfAsYBHQIfAsQBiwIdAhsCjQIPA48CyAAzANMAyAFnAWABxAHGAVoBxAFaAVQByAHKAWcBIwLKAcgBHQLEARsCkwIlAiMCkwKVAiUCEwOTApECCwMNA40CrgMRAw8D3gBCAFIA3gBSAOgA0wAzAEIAEwOVApMCEQOyAxMDrAOuAw0DwQHEAVQBsAOyAxEDVAHIAE4BvQEbAsEBGAIbAr0BJQKXAicCqQMRBKwDTgHIAL8AJQLPAcwBFQOXApUCsgMVAxMDFwSyA7ADEQSpAw4EzAHPAW0BYQRjBBcEYQQXBBQEBgOIAoUCBgMIA4gCsgMdBLUDvQFOAUoBmgIqAicCmgInApcCgQIGA4UCAwMGA4ECtQO4AxgDowMIAwYDYwRmBBcEWwReBA4EJwIqAtIBJwLSAc8BbQFyAXMBvQFKAUsBzwHTAXIBGAMbA5oCBwQLBKYDYwRnBGYEXwReBFsEqARhBF4E3wDoAOkAyQDTANQAyQDIANMAbQH1APQAbQFzAfUASwFKAU4BcgHTAXUBuwG9Ab4BFQIUArsBmgKbAisCgQKFAoYCgQKGAoICGQMbAxgDuAO5AxgDnwOeAwMDngOkA6MDnwOkA54DIAS5A7UDpAMIBKMDHQRpBB4EZwRpBB0EZwQdBBoEWARXBAsEWARcBFsEpwSqBGMEpAReBF8E9QDoAPQA6QDoAPUAqgRnBGQEoQRfBFwE9QBzAf4ARgG+AUsBKwLVAdMBoQSkBF8ESwFPAboAKwItAtUBaQQgBB4E0wF4AXUB0wHVAXgBFQK7AbYBGwMdA50CuQMgBLsDAwQIBKQDaQRsBCAEnQRcBFgEdQH+AHMBmAMEA/4CAwSkA58D3wBDADQAdQEEAf4AqATzBKoELQLYAdUB7ATvBKQEYQDpAPUAyQDUACYAtgG7AUYBbwN7A+UCbwPlAtkCJgDUADQAdQF4AQQBeAHVAXwBoAIvAp0CfQL+AoICbwPoA3sDUwQIBAME2AF8AdUBcAQjBGwEVABTAGEANABDADUAwADJAB0ABAF4AQcBCwK2AbEBYwNvA9ICbAD1AP4AbABhAPUAwQDAAB0A/gAEAQUBBAEHAQgBBwF4AQgBeAF9AXkBeAF8AX0B2QF9AXwB2AHZAXwBEQIQAgwC5QJ7A+YC/wJ9An4C/wL+An0CfAN7A4cDfAOHA4gDcANvA2MDvgO/Ax0DmQOfA5gDcQQkBHAEBARPBAMEVASZBFME6QToBKEE9wT2BPME6QTsBOgE7QTvBOwEVABhAGIAYgBhAGwA/gD/AGwABQH/AP4ACAEFAQQBeAF5AQgBDAILAhECDAJ9AgsC2gLZAuYCfAPmAnsDcAPeA28D8gOIA/EDmQOYA/4CmQP+Av8CcQRwBGwE+gSxBLAE5AShBJ0E9wT6BPYE5ATpBKEENQBDAEQAMwLbAdkB/wMEBKAD/wOgA5kD7QTwBO8EbAAFAXMAbAD/AAUB2QHbAX0BCwF5AX0BCAF5AQsBgAF9AdsBsgG3AUIBcQQoBCQE/wNQBAQEcwAFAXkAeQAFAQgBMwI2At4BMwLeAdsBRgX3BPQEowI2AjMCRgVLBfcEgAEPAQsBgAELAX0BgAHbAd4BgAHeAYQBBgIMArIB+QJ+AngCMwXpBOQEJwA1ADYAcwB5AHoAeQAIAXoACwEQAQwBCwEPARABgAEQAQ8BQwFCAa0AhAGFAYAB3gGFAYQBNgI3At4BBgKyAasBZANlA3ADfQN8A+kDKAQsBCsESwRKBP8DRgVMBUsFVQBEAFQANQBFADYAYgBsAG0AFgAdAB4AegAIAQsBCwEMAX8ACwF/AHoArQC2AK4AgQEQAYABhQGBAYAB3wGFAd4BsgE6ATsBqwGyAawBNwLfAd4BBwIGAqsBBwKrAawBXwLTAtoCXwLaAmgCfAPnAuYCWgNlA1kDZQNxA3ADxQMmAyUDAAT/A5oDlQSUBFAEBAW5BLgEBAW4BP4E/wQEBf4E+wT/BP4E+wT+BPoETAVQBUsFNAU6BTMFRwVMBUYFQgVHBUYFYwBiAG0AdABzAHoAgQETARAB3wE5AuEBOQLfATcCeQQsBHUEUQX7BPoETAVRBVAFEwGBAYUB3wHhAYgB3wGIAYUBjQSVBEsEOwFDAa4AOwGuAKQAfwAMARABEAGGAH8A4QHkAYgBQgRLBAAEQgQABPkDBAW8BLkEiAETAYUBZQPWA3ED5AGMAYgBaALbAmkCQwRLBEIEiwVHBUIFgwWLBUIFegB/AHsApACuAKUArAExATIBPAI9AuQBMAOqAioD+gJ5AnoC+wKTA/oC1wPWA2UDiwWMBUcFdQB0AHoAfwCGAIcAfwCHAIAABAAMAA0AhgAQAYcArgAMAAQAEwEUARABGQETARgBGQEUARMBGAGIARkBGAETAYgBiAGNAYkBiAGMAY0BrQGsATIBCAIHAqwBCAKsAa0BYAJfAmkCTwLJAlYCfgPoAucCfgPnAn0DUgNaA1EDUgNRA8kCZgPXA2UD1wPfA9YDCwW9BLwECgULBbwElQTYBNcEWAUABf8E4AQiBd8EUgVRBUwFhAWLBYMFjAWLBYQFFAGHABABjQHkAeUBjQGMAeQBVwJWAmACcQJ5Av8B3ALbAugC+wL6AnoCMQOrAjADKgMxAzAD4APrA98D4APfA9cDLQQxBCwEQwRCBPoDQwRMBEsEjgSVBI0ECwUKBQQF4ATfBNgEUgVYBVEFkwVNBUwFRwWTBUwFjAWTBUcFGQGIAYkBMgE7ATwBPwLnAeUBaQLbAtwCjgCHABQB5QHnAZEB5QGRAY0B8gL7AnECYAUFBQAFWAVgBQAFjQEZAYkBGQGNAR0BhgSOBEMEMQOvAqsCswK4Aj8CjgAUAZUAFAEZAZUAkQHnAeoBOAOvAjEDbgV0BSsFgQCAAIcA6gGWAZEB2QQaBdgEGwUiBRoFjwCHAI4AhwCPAIgABQAEAA0AjwCOAJYAlQCWAI4AlQAZAZYAjQGOAR0BjQGRAZIBlgGXAZEB6gHrAZYBpQGtATIB7gHvAesB6gHuAesBRgJHAu8BRgLvAe4BAAL/AaQBTwJXAlgCxQLKAsQCrwKwArMCfwPpAugCfwPoAn4D8wKNA/IC2APgA9cDhwRDBEQEjwSOBIcEYAVhBQUFIwUrBSIFjQWTBYwFhAWNBYwFDgANABcAgQCHAIgAGgGWABkBrwAEAAUAHgEZAR0BHgEaARkBjgEeAR0BnwClAKYAjgGNAZIBkQGXAZIB6wGXAZYBxQLEAkwCcgJxAgACtAK5ArMCtAKzArACMQM5AzgDzAMsAysD9AOMA40D+wP6A/QDewSABHoEwwR7BMIEDAXDBL0EBgUMBQUFGwUjBSIFIwUsBSsFWQVYBVIFLAVvBSsFbwV1BW4FlAWbBZoFfQWFBYQFHgGOAZIBuQK8AkMCLAMyAysDYQUGBQUFWQVhBVgFkgEkAR4BRwLyAe8B2APhA+AD6wHvAZcBvALAAkkCvAJJAkcClwHvAZwBSQLFAkwCPgO0AjkDwALFAkkCUwPLAsUCPQT7A/QDRAT7Az0EmwWgBVkFmwVZBVMFpgCwAAUAlgAaAR4BSQJMAvcBSQL3AfIBwwSABHsEzAMyAywDHgGbAJYAlwEkAZIBPgO5ArQCyQSABMMEQwO5Aj4DzAPSAzID9wFMAlACHgEfAZsAHwEeASUBJAElAR4B7wHyAZwB8gH3AfMBWAJhAmICRAO8ArkC9AKNA/MC0wMyA9IDRQSHBEQEwwTEBMkEHAUkBSMFHAUjBRsFoQVZBaAFnAWbBZQFfgWFBX0FiQCIAJAAkACPAJcABgAFAA4AlwCWAJwAnACWAJsABgAAAAUAnACbAB8BAQCmAAAAKQEkAZcBmAGXAZwBLAEzATQBnAGdAZgBnAHyAZ0BpgGlAS0B9wH7AfwBawJiAmECawJhAmoC6gLeAukCwQLGAsACvALBAsACvQLBArwCQwNEA7kCgAPpAn8DPwNEA0MDcwOAA38DOgM5AzIDXQNoA2cDXQNnA1wD2APiA+EDjgONA/QCOQTMAzgEPgRFBEQExATKBMkEEwXDBBIFzQTSBNEEDAUTBRIFHAUbBdkEHAXZBNIEaAVnBWEFoQVaBVkFnAWgBZsFlQWcBZQFdgV9BXUFoACfAKcAJQEkASkBmAEpAZcBnQHyAfMB+AHzAfcB/AFQAlECAQKlAaYBUQJQAlgCUQJYAlkCWQJYAmICTgNUA00DOgM/AzkDaAPYA2cD2QPiA9gD9QP0A44DgQQzBIAEPgQ9BPUDYgVoBWEFJAVwBSMFoQWgBZwFcAV2BXUFfgV9BXYFfgWGBYUFoQGdAfMB3gLqAoADawVwBSQFSgNOA8YCSgPGAsECaANzA+IDaAPiA9kDYgJrAt4CcAU2BXYFnAAfASUBcAUtBTYFKQGYAZ0B1APTA80DRQSJBIgEiQTNBIgEmACQAJcAmACcAJ0AIAGcAB8BqAABAAIAJgElASoBKgElASkBKgEpAZ0BLgEtATQBLgE0ATUBngGdAaIBogGdAaEBogGhAfMB8wH4AfkB/QH4AfwB/QH8AVECdAPeAnMDdAPfAt4CSwNOA0oDaQNoA10DXgNpA10DjgP0AvUCRgSJBEUEDQUUBRMFaQUOBQ0FaAVpBQ0FGAUXBdIEGAUcBRcFYwVpBWgFYwVoBWIFfwV+BTwFfwU8BT0FlQWdBZwFjwWOBYYFkQCQAJgA9AHzAfkB+QH4Af0BSwNPA04DVQNUA08DVQNeA1QDXgNdA1QDNAM7AzMDjwOOA/UCzgPUA80DNAQ6BDMEggQ0BDMEPwQ+BPUDPwRGBD4EGAXSBNMEPQU2BTcFJQUkBR0FWwViBVoFogVbBVoFnQWiBaEFlgWdBZUFhwWGBX4F1AM0AzMD1AMzA9MDPwT1A/YDYwViBVsFfwWHBX4FRgQ/BIkEdwU9BTcF1gLfAmMCkQCLAIoABwAQABEAAwACAAcAIQEgASYBNQGhAKIAmgEqAZkBmgGZAZ4BngGiAaMBAgKnAagBYwLfAuACdAN1A98CRgNIA0UDTwNWA1UDagN1A3QDagN0A2kDkAP2A48DigSJBEYExgTMBMsExgTLBMUE1ATTBM4EGAXTBNQEZAVpBWMFXAVbBaIFeAV3BXEFdwV4BX8FkAWXBZYFjwWQBZYFiAWPBYcFgAV/BXgFkgCRAJkACAAHABEAogChAKgAogCoAKkANgE1AaIAAwICAqgBUgJaAlsCWwJaAmMCWwJjAmQC4AJsAmMCdAICAnUC3wJ1A+ACSwNMA1ADTANLA0gDSQNMA0gDUANWA08DSQNIA0YD1QM1AzQD1QM0A9QDOwTPAzoENQQ7BDoE9gP3Az8EQAQ/BPcDgwQ0BIIEQARGBD8ERwRGBEAEFQXGBBQF1ATOBM8EGQUYBdQEZAVqBWkFJQUdBR4FJgVtBWwFngWjBaIFUwJSAlsCZAJjAmwCPAM7AzUDHgUmBSUFbQVyBXEFkAWPBYgFdQOBA+ACwgLHAkwDwgJMA0kDvgLCAkkD1ATPBIoE+gH+AVMCxwJWA1ADxgSDBMwEJgUvBW0FLwVyBW0FGwGZACEBoAGbAZ8B8AGgAZ8BTgL6AU0CTgL1AfoBZQJbAmQCbQJkAmwC6wLsAuACtQK6AkYDtQJGA0EDPQM8AzUD1QPPAzUDxwSDBMYEjACLAJIAkwCZAJoAqgCjAKkAlAGTAZsBLwE2ATcB8QGgAfABSgL2AfUBSgL1AU4CXAJbAmUCbQLgAuECwwLIAscCvgK/AsMCvgLDAsICuwK/Ar4C7ALrAoEDzAJXA1YDxwLMAlYD9wL2AnUCVwNgA18DVwNfA1YD2wPaA2oDkQP3A5AD+AP3A5EDPATPAzsENgQ8BDsEhAQ2BDUEhAQ1BIMESARABEEExwSEBIMESASKBEcEiwSKBEgEkQSQBIoEkQSKBIsEkQTVBNQEkQTUBJAEFQXHBMYEEAUVBQ8F1ATVBNsE2wTaBNQE2gTbBB4FZAUPBWoFHgUnBSYFJgUwBS8FnwVcBaMFmAWeBZcFiQWRBZAFiQWQBYgFjACDAIsAjACSAJMAMAEvATcBwwJKAsgCyALMAscCNgM9AzUDYANrA18D5AN2A3UD0AM2A88DPATQA88DSARBBPgDFgXHBBUFEAUWBRUF2wQfBR4FJwUeBR8FJwUwBSYFcwV5BXIFSgJOAsgCfASEBMcEZQUQBWQF5AOCA3YDNgTIAzwEEAXHBBYFVAVdBZ8FjwEiASgB5APsA4IDkwCaABsBRALxAUgCRALsAfEByAJOAlQCvgTHBBAF/AP4A5ED/AORA5UDcwUwBXkFsgCxAAkAYANhA2sD/AOVA/0DhAQ3BDYE1QTcBNsECAUQBQcFJwUoBTAFhAB8AIMAfQB8AIQAEwAJABIACgAJABMAqgCxALIANwE9AT4BrwE3ATgB6QHoAewBRALtAewBQAJBAkQCXAJlAmYCzAJYA1cDYQNgA1cDbAPcA2sD3APbA2sDkgORA/cCkgOWA5EDlQORA5YDyQPRA8gDyQPIAzYE/QOVA5YD/ANJBEgEiwRIBEkEkgSLBIwEkQSLBJIE1QSRBJIEZgUHBWUFHwUoBScFVAVVBV0FVQVUBZ8FOAV6BXkFiQWSBZEFiQWKBZIFlACTABYBHAEWARsB6QGVAZQBQQLpAe0BQQLtAUUCXQJcAmYC7QLiAuEC7QLhAuwCrAKxAjYD+AJ2AncC+AL3AnYCYQNXA1gDYQNsA2sDNwTJAzYESQT8A/0DyAR9BMcEjASLBEkEvwTIBL4EEQW/BBAFkgTWBNUE1gTcBNUEHwXbBCAFHwUgBSgFKAUxBTAFVQVeBV0FMQU4BTAFggWKBYkFggWJBYEFqgGpAa8BzQJYA8wC+AKSA/cCLgMtA9AD/AKSA/gC/AKWA5IDkgSMBEkE3AQgBdsEHAGQAYoB6QGQAZUBIAXcBCgFSQRNBJIE4QQoBdwEjQCUABYB/AL4AncCLgQ3BIUEXgUBBWYFEQGNABYBewL8AncCkgTcBNYEggU4BT4FggV6BTgFsgAKABMAbAPlA9wDkgSWBNwE5gGKAZABzQJdAtACyQMuA9EDSQT9A00EPgWKBYIFhgEcAYoB4gGKAeYBWAPNAmEDyQMnAy4DPgVDBYoFEwAaABsA0AJhA80C3ASWBJcEEQUIBb8EKAUpBTEFhQCEAI0ADQERARIBDQGNABEBPwE+AasAhwEWAYYBhwGGAYoB4wGKAeIB4wHiAeYBCgKvAbABCgIJAq8BZwJmAm4CZwJuAm8C0AJdAtEC/AJ7AnwCeAOEA4MDeAODA+UDdwN4A+UD/QOWA5cDTQT9A04EdwR9BL8EkgRNBE4ElwSWBJIE4gThBNwE3ATdBOIE4QTiBCgFKAXiBCkFMQUpBTIFVQVWBV4FTwVVBU4FIQAgACkAbwBuAHYAdwB9AH4AFAATABsAuAATABQAEgERARYBFwEWAYcBiwGHAYoBXgJdAmcCbgLiAuMC4wLtAu4CrAKpAq0CqQKsAqgC0QJhA9AC/QL8AnwChAPuAu0CYQPRAmIDYgNtA2wDYgNsA2EDKAMuAycDeAN3A2wDbQN4A2wDyQPKAygDLwQ3BC4E/QP+AwEE/QMBBE4EfgQvBH0EvwTABHYEkgROBJMEkgSTBJcEugTABL8E3QTcBJYE3QSWBJcEXwUCBV4FQwVEBUkFQwVJBUgFPwGzAKwA/gP9A5cDMgXiBOYEMgUpBeIEOQU4BTEFOQUxBTIFSQVPBU4FVgUCBV8FhwGLAeMBwwPKAy8EPwGzAEQBqQI4AjsClwSTBE4EAQSXA5sDAQT+A5cDTgRRBJcE5gPuA4QD3QSXBOIECQF+AA0BdwQpBC8EMgXqBDkFCgKwAbQBmwOXA/0CmwTiBJcE5gTqBDIFCgK0AQ4CiQPuAoQDwwMjAygDmwP9AgAD+AT8BFYFIQApACoA3AGCAYcB3AGHAeABqQI0AjgC/QJ8An8C/QJ/AgADeABvAHcABgF+AAkBvAAbAL0AfwENAX4BfwF+AYIB3AGDAYIBNQLgATgCNAI1AjgCbQN5A3gDAQSbA5wDTgQBBAIE5gTnBOoEOQXqBOsERAVFBUkFZQBWAGQAVwBWAGUAcABlAG8ACgEGAQkBvQC4ALwARQE/AUQBNQLcAeABpAI1AjQC8QKJA4oD8QLvAu4C8QLuAokDKQOkAigDbQNiA24D7gOFA4QD5wPmA3gD5wPuA+YDAQObAwADAgQBBJwDUgRRBE4ElwRRBFIElwRSBJgEmASbBJcEmwSYBJwEmwScBOMEAgW3BLYEmwTjBOIE4gTjBOcE5gTiBOcEQAVFBUQFRwA3AEYAOAA3AEcAKgA3ADgAIgAhACoAeAB3AAYBvQAbABwANQLdAdwBeQNtA24DhQOKA4QD5wPvA+4DnAObAwEDwAPEAyoETgQCBAUETgQFBFIE/QS3BAMFRQX1BEoFtQFFAbgBAQN/AoACKQMkA6UCAQMAA38CnASfBOMEnwTnBOME6wTqBOcERQXxBPUE7gTxBEAF2gGDAd0BogKlAiQDeQPvA+cDcwQqBHgEmARSBJwEAgScAwUEtwRuBHMEVQScBFIENQLaAd0BnAOhAwUEwgAiACoA6wSfBKIE6wTnBJ8EEgIPArUBEgK1AbgBJQTAAyoErgSyBP0E+QSuBP0EdgEGAQoBdgEKAXoB1gF6AX8B1gF/AdoBgAISAoMCeQPYAuQCCQRSBAUEUgQJBFUEnARVBJ8EwgAqAMoAHwOeAqICbgQlBHMEnwRVBFkESAA4AEcAeQPkAu8CeQPvAoUDIQQlBG4E9QSrBK4E1QA4ANYAywAqAMoAwgDKAMsA9wD2AAAB9wAAAQEBdwEGAXYBdwF2AXoBewF3AXoB1wHaATECMgLXATECLgLXATICEgK4AbkBEgK5ARMCLgIyAjEChAISAhMChgOKA4sD7wOFA4oD7wPwA4YDvAO9Ax8DvAMfA8ADBQSiAwYEBQShA6IDBQQGBAoEagRrBG4EWQRVBFoEWQRaBJ8EogSfBKMEqwSsBK4EogSmBKUE9QSpBKwE8QSpBPUE8gSpBPEE6wBHAFcA4ABHAOsA6wBXAOoA4ABIAEcA1gBIAOAAwwC9AMIASQFIAU0BuQG4AbwBhAITAhcChAIXAocCIAOfAp4CIAOeAh8DAgMBA4ACAgOAAoQChgOLA4UDnQOcAwEDnQMBAwIDogOhA5wDogOcA50DIgQmBCUECgQJBAUECgRVBAkECgRWBFUEWgRVBFYEowSfBKAEBgSiA6UDBgSlAwoEWgSgBJ8E1wF3AXsBEwK5ARcCAgMFA6IDWgSjBKAEowRaBF0ETQG+AMMAWgRWBAoELgLUAdcBDQRaBAoEbgH3AAEBbgEBAXQBLALUAS4CGgMcA70DugMaA70DpgRdBGAEpgSjBF0EaAQbBB8EaAQfBGsEpgRiBKkECgSlA6cDCgSnAw0EYgRlBKkELALQAdQBKALQASwCFwK8ARkCnAKYAiwCBQOEAocCBQOHAgcDtgMWAxoDugO2AxoDpQMHA6cDvwFQAcIBhwIXAokCBwOHAgkDBQMHA6UDBQOlA6IDDQSnAw8EXQQSBGAEzQFuAdAB0QHOAdABCQOJAooCFwOYAhoDFgMXAxoDpwMKA6gDHASzAxsEDwSnA6oDGAQZBBsEDwQQBBMEEgQTBGAEZQQVBBgEYgQVBGUEYAQVBGIE4QDrAOwA1wDWAOAA1wDgAOEA7ADrAPcA7AD3APgAbwH4APcAbwH3AG4BzQFvAW4BzgFvAc0BwAG/AcMBKQLQASgCKQIoApgClgKZApgCtAMUA7cDtAO3A7YDpwOoA6sDqgOrAw8EEAQPBKsDGQQcBBsEEwQSBA8EYAQWBBUEwAHDARwCJgLRASkCGgLAARwCJgIpApkCCgOKAgwDEASrAxMEigKMAgwDqwMOA60DrwOxAxkEFAOUApYCEgMUA7QDrQMOA68DyQFoAcsBlAIkAiYClgKUAiYCjAKOAg4DsQMQAxIDEAOxA68DyQFbAWEBIgLJAcsBIgLLASQCHgLFASACIALFAccBIALHAckBIALJASICjAIeAo4CjAIcAh4CEgOSApQCHgIgApACkgIiApQCkAKSAhID7AD4AFgAZgBYAPgAzAArACwAaAFiAWkBYQFiAWgBXAFiAWEBXAFhAVsBSgBJAFgAZgBnAFgAZgD4AGcASgBYAFkAWQBYAGcAzQDMACwAaQFwAW8BVgFbAVUBZwD4APkAOwA6AEoAWgBZAGcAaABnAPkAzQAsAC0AXQFcAVYBWgBnAGgALQAsADsAzgDNAC0AzgBXAVYBzgBWAc0AXQFWAVcBSwBKAFkASwBZAFoAXQFXAdgA2ABXAc4AagH6AHEBAgFoAPoA4gBqAWMB4gDtAGoBzgDZANgAaAByAGkAcgBoAHEAzwDOAC0AzwAtAC4A+wACAfoAzwDZAM4A2QDiANgA4wDuAO0A+wADAQIB7gD7AO0A+wBpAHIA+wByAAMB2QAuADwATQBMAFsATQBbAFwAPAA9ANkA2QA9ANoA/AD7AO4A5ADvAO4A2gDkANkA7wBcAPwA5ABNAO8AXgBPAD8ATwBQAD8APwBQAEAAXQA/AD4AXQBeAD8AXQA+AE4ANwBWAEYAZABWADcAKQBkADcAIABvACkAbwBkACkAbgBvACAAdgBuACAAdgAaAH0AdgAgABoAGQB9ABoAfAB9ABkAgwB8ABkAEQCCABIAggCDABIAEgCDABkAEQCLAIIAEQCKAIsAEQAQAIoAEAAPAIoAiQCKAA8ADgCJAA8AiQAOAIgADgCBAIgADgAYAIEAGACAAIEAGAAXAIAAFwB7AIAAFwB1AHsAFwAfAHUAHwAeAHUAdQAeAHQAbQB0AB4AHgAoAG0AbQAoAGMAYwA2AFUAYwAoADYAVQA2AEUAaQA8AEwATABoAGkATABLAGgASwBaAGgAXABbAGkAaQBbAEwA";
+let MV=null,MT=null;
+(function(){const bin=atob(MESH),n=bin.length,u8=new Uint8Array(n);
+  for(let i=0;i<n;i++)u8[i]=bin.charCodeAt(i);
+  const nv=1444,ntr=2910;
+  MV=new Int16Array(u8.buffer,0,nv*3);
+  MT=new Uint16Array(u8.buffer,nv*6,ntr*3);})();
+
+function tri(a,b,c){
+  const x0=Math.max(0,Math.floor(Math.min(a[0],b[0],c[0]))),x1=Math.min(W-1,Math.ceil(Math.max(a[0],b[0],c[0])));
+  const y0=Math.max(0,Math.floor(Math.min(a[1],b[1],c[1]))),y1=Math.min(H-1,Math.ceil(Math.max(a[1],b[1],c[1])));
+  if(x1<x0||y1<y0)return;
+  const d=(b[1]-c[1])*(a[0]-c[0])+(c[0]-b[0])*(a[1]-c[1]); if(Math.abs(d)<1e-9)return;
+  const id=1/d;
+  for(let y=y0;y<=y1;y++){const base=y*W;
+    for(let x=x0;x<=x1;x++){
+      const w0=((b[1]-c[1])*(x-c[0])+(c[0]-b[0])*(y-c[1]))*id;
+      const w1=((c[1]-a[1])*(x-c[0])+(a[0]-c[0])*(y-c[1]))*id, w2=1-w0-w1;
+      if(w0<0||w1<0||w2<0)continue;
+      const z=w0*a[2]+w1*b[2]+w2*c[2]+2, i=base+x;
+      if(z>zbuf[i])zbuf[i]=z;
+    }}
+}
+const wA=[0,0,0],wB=[0,0,0],wC=[0,0,0];
+let wProj=null;
+function whale(t){
+  const ay=t*2*Math.PI,ax=0.35,cx=Math.cos(ax),sx=Math.sin(ax),ca=Math.cos(ay),sa=Math.sin(ay);
+  const n=MV.length/3, sc=205, k=1/32767;
+  if(!wProj)wProj=new Float32Array(n*3);
+  for(let i=0,j=0;i<n;i++,j+=3){
+    const px=MV[j]*k,py=MV[j+1]*k,pz=MV[j+2]*k;
+    const x=px*ca+pz*sa, z0=-px*sa+pz*ca;
+    wProj[j]=W/2+x*sc; wProj[j+1]=H/2-(py*cx-z0*sx)*sc; wProj[j+2]=py*sx+z0*cx;
+  }
+  for(let i=0;i<MT.length;i+=3){
+    const p=MT[i]*3,q2=MT[i+1]*3,r=MT[i+2]*3;
+    wA[0]=wProj[p];wA[1]=wProj[p+1];wA[2]=wProj[p+2];
+    wB[0]=wProj[q2];wB[1]=wProj[q2+1];wB[2]=wProj[q2+2];
+    wC[0]=wProj[r];wC[1]=wProj[r+1];wC[2]=wProj[r+2];
+    tri(wA,wB,wC);
+  }
+}
+
+const V=[];for(let i=0;i<8;i++)V.push([(i&1?.5:-.5),(i&2?.5:-.5),(i&4?.5:-.5)]);
+const F=[[4,5,7,6],[0,2,3,1],[1,3,7,5],[0,4,6,2],[2,6,7,3],[0,1,5,4]];
+function cube(t){
+  const ay=t*2*Math.PI,ax=0.46,cx=Math.cos(ax),sx=Math.sin(ax),ca=Math.cos(ay),sa=Math.sin(ay);
+  const R=V.map(v=>{const x=v[0]*ca+v[2]*sa,z0=-v[0]*sa+v[2]*ca,y=v[1];
+    return [x,y*cx-z0*sx,y*sx+z0*cx];});
+  const sc=172,P=R.map(v=>[W/2+v[0]*sc,H/2-v[1]*sc,v[2]]);
+  for(const f of F){
+    const a0=R[f[0]],b0=R[f[1]],c0=R[f[2]];
+    const ux=b0[0]-a0[0],uy=b0[1]-a0[1],vx2=c0[0]-a0[0],vy2=c0[1]-a0[1];
+    if(ux*vy2-uy*vx2<=0)continue;
+    tri(P[f[0]],P[f[1]],P[f[2]]); tri(P[f[0]],P[f[2]],P[f[3]]);
+  }
+}
+/* Flat propeller, single depth, rotating in the plane of the screen.
+   No volume at all: the only stereo cue is the step from the wall, which is
+   the one thing an autostereogram represents cleanly. Blades are paddles
+   rather than thin vanes because only HORIZONTAL extent buys coverage -- a
+   vane pointing straight up gives each row a run only as wide as the vane. */
+function prop(t){
+  const cxp=W/2,cyp=H/2,nb=8,L=170,BW=40,RH=26,hw=BW/2;
+  const capU=L-hw, hw2=hw*hw;
+  /* solid core: inside this radius adjacent blades overlap anyway */
+  const RC=Math.max(RH,hw/Math.sin(Math.PI/nb)), RC2=RC*RC;
+  const y0=Math.max(0,Math.ceil(cyp-RC)),y1=Math.min(H-1,Math.floor(cyp+RC));
+  for(let y=y0;y<=y1;y++){
+    const dy=y-cyp,base=y*W,hx=Math.sqrt(Math.max(0,RC2-dy*dy));
+    const xa=Math.max(0,Math.ceil(cxp-hx)),xb=Math.min(W-1,Math.floor(cxp+hx));
+    for(let x=xa;x<=xb;x++)zbuf[base+x]=1;
+  }
+  /* one bounding box per blade beats testing every blade at every pixel */
+  for(let k=0;k<nb;k++){
+    const ang=t*2*Math.PI+k*2*Math.PI/nb, c=Math.cos(ang), s=Math.sin(ang);
+    let bx0=1e9,bx1=-1e9,by0=1e9,by1=-1e9;
+    for(const u of [0,L])for(const v of [-hw,hw]){
+      const px=cxp+u*c-v*s, py=cyp+u*s+v*c;
+      if(px<bx0)bx0=px; if(px>bx1)bx1=px; if(py<by0)by0=py; if(py>by1)by1=py;
+    }
+    const ya=Math.max(0,Math.floor(by0)),yb=Math.min(H-1,Math.ceil(by1));
+    const xa=Math.max(0,Math.floor(bx0)),xb=Math.min(W-1,Math.ceil(bx1));
+    for(let y=ya;y<=yb;y++){
+      const dy=y-cyp,base=y*W;
+      for(let x=xa;x<=xb;x++){
+        if(zbuf[base+x]>0)continue;
+        const dx=x-cxp, u=dx*c+dy*s;
+        if(u<0||u>L)continue;
+        const v=-dx*s+dy*c;
+        if(v>hw||v<-hw)continue;
+        if(u>capU){const du=u-capU; if(du*du+v*v>hw2)continue;}
+        zbuf[base+x]=1;
+      }
+    }
+  }
+}
+
+/* rigid ball, right to left across the frame, three bounces per pass.
+   It leaves the frame at both ends on purpose: that is the case that
+   breaks a splice anchored to the frame edges.                        */
+function ball(t){
+  const r=165,nb=3,floorY=H-175,apexY=190;
+  const u=t-Math.floor(t);
+  const cxp=(W-60)*(1-u)+30;
+  const ph=(u*nb)%1, cyp=floorY-(floorY-apexY)*Math.sin(Math.PI*ph);
+  const yA=Math.max(0,Math.ceil(cyp-r)),yB=Math.min(H-1,Math.floor(cyp+r));
+  for(let y=yA;y<=yB;y++){
+    const dy=(y-cyp)/r,base=y*W,hw=r*Math.sqrt(Math.max(0,1-dy*dy));
+    const x0=Math.max(0,Math.ceil(cxp-hw)),x1=Math.min(W-1,Math.floor(cxp+hw));
+    for(let x=x0;x<=x1;x++){const dxx=(x-cxp)/r,q=1-dxx*dxx-dy*dy;
+      if(q>0)zbuf[base+x]=1+Math.sqrt(q);}
+  }
+}
+function wedge(){
+  const n=4,bw=170,gap=26,tot=n*bw+(n-1)*gap,x0=(W-tot)/2,y0=70,y1=H-70;
+  for(let k=0;k<n;k++){const a=Math.round(x0+k*(bw+gap)),b=a+bw,z=1+0.2*(k+1);
+    for(let y=y0;y<y1;y++){const base=y*W;for(let x=a;x<b;x++)zbuf[base+x]=z;}}
+}
+/* depth in z=0 (background) .. z=1 (nearest).
+   The mapping is fixed for the whole rotation, sampled once per shape:
+   normalising per frame made the solid inflate and deflate as it turned,
+   and pinned its rearmost point to the background at every angle.       */
+function draw(shape,t){
+  if(shape==='prop')prop(t); else if(shape==='whale')whale(t); else if(shape==='cube')cube(t);
+  else if(shape==='ball')ball(t); else wedge();
+}
+const dRange={};
+function rawRange(shape){
+  if(dRange[shape])return dRange[shape];
+  let lo=1e9,hi=-1e9;
+  for(let k=0;k<12;k++){
+    zbuf.fill(0); draw(shape,k/12);
+    for(let i=0;i<W*H;i++){const v=zbuf[i]; if(v>0){if(v<lo)lo=v; if(v>hi)hi=v;}}
+  }
+  if(hi<=lo)hi=lo+1;
+  dRange[shape]=[lo,hi]; return dRange[shape];
+}
+/* z of the nearest plane that still sits `gap` pixels in front of the wall */
+function gapZ(){
+  const p=S.per,E=2*p,s=p-S.gap;
+  if(s>=p)return 0;
+  return Math.max(0,Math.min(0.92,(2*s-E)/(S.mu*(s-E))));
+}
+let usedLo=0,usedHi=0;
+function geometry(t){
+  const R=rawRange(S.shape);
+  zbuf.fill(0); draw(S.shape,t);
+  const zl=gapZ(),k=(1-zl)/(R[1]-R[0]);
+  let lo=1e9,hi=-1e9;
+  for(let i=0;i<W*H;i++){const v=zbuf[i];
+    if(v>0){const z=zl+(v-R[0])*k; zbuf[i]=z<zl?zl:(z>1?1:z); if(z<lo)lo=z; if(z>hi)hi=z;}}
+  usedLo=lo>1e8?zl:lo; usedHi=hi<-1e8?zl:hi;
+}
+
+/* ── one video frame ───────────────────────────────────────────────
+   I(x) = P(phi(x) mod p),  dphi/dx = p / sep(z(x)).
+   Background sep = p, so phi(x) = x there and the wallpaper is a fixed
+   function of x: no drift is representable. Phase lock integrates phi
+   inward from BOTH edges and splices at the right silhouette.        */
+function frame(t){
+  /* One clock, called a tick, drives BOTH the pose and the seed. The scintillation
+     rate is the tick rate; the rotation speed is how far the pose advances per
+     tick. Between ticks the frame is repeated byte for byte, so slowing the
+     noise down does not expose the silhouette - nothing moves during a hold
+     either. Reseeding per rendered frame, as before, tied the noise speed to
+     whatever the display happened to be doing.                              */
+  const rate=S.rate>0?S.rate:0;
+  const tick=rate>0?Math.floor(t*S.rpm*rate+1e-9):0;
+  const tq=rate>0?tick/(rate*S.rpm):t;
+  const fresh=(tick!==lastTick);
+  geometry(tq);
+  const p=S.per,E=2*p,mu=S.mu,d=img.data,q=S.quant;
+  seedCtr=tick;
+  buildNoise(S.hold>0?Math.floor(tick/S.hold):0);
+  /* A uniform offset added to phi everywhere leaves every pair difference alone,
+     so it costs no disparity: the whole field just translates. With the seed
+     frozen, a drift of one pixel or more per frame decorrelates every pixel
+     equally - wall, object interior and the pixels crossing the edge - so it is
+     as leak-free as reseeding, but reads as coherent flow rather than twinkle
+     and compresses far better.                                              */
+  const dacc=S.drift?((S.drift*tick)%p+p)%p:0;
+  const scroll=Math.round(S.scroll*tq*S.rpm),hueSh=S.hue*tq*S.rpm,tint=S.tint/100;
+  buildLut(hueSh);
+
+  let covPairs=0,covTot=0;
+  for(let y=0;y<H;y++){
+    const base=y*W;
+    phiL[0]=0;
+    for(let x=0;x<W;x++){
+      const z=zbuf[base+x];
+      let s=E*(1-mu*z)/(2-mu*z); if(q)s=Math.round(s);
+      sepr[x]=s; phiL[x+1]=phiL[x]+p/s;
+    }
+    driftRaw[y]=phiL[W]-W;
+    /* An object narrower than its own separation has almost no pixel whose
+       partner also lands on it, so there is nothing for the eyes to match and
+       it collapses into a disturbance on the wall. This measures that.       */
+    let phi=phiL;
+    if(S.lock){
+      phi=phiR;
+      /* count depth discontinuities along the row, so a link can be accepted
+         either because nothing broke between the two columns (slanted and
+         curved surfaces) or because they sit at the same depth (two separate
+         blades of one flat propeller).                                     */
+      let dc=0;
+      for(let x=0;x<W;x++){
+        if(x&&Math.abs(zbuf[base+x]-zbuf[base+x-1])>0.06)dc++;
+        discp[x]=dc;
+        if(zbuf[base+x]<=0)phi[x]=x; else psrc[x]=-1;
+      }
+      /* Link every object column to the column one separation away that it
+         must match. Links may cross between separate runs, which is what lets
+         several thin blades at one depth pair with each other.            */
+      for(let x=0;x<W;x++){
+        const z=zbuf[base+x]; if(z<=0)continue;
+        const tp=x+sepr[x],c=Math.round(tp);
+        if(c<W&&c>x&&psrc[c]<0&&zbuf[base+c]>0&&
+           (discp[c]===discp[x]||Math.abs(zbuf[base+c]-z)<0.03)){
+          psrc[c]=x; pfrac[c]=c-tp;
+        }
+      }
+      /* Is the depth piecewise constant along this row? If separation only ever
+         changes where the depth jumps, every object column can take its phase
+         from a formula in x alone, and the object's texture then does not move
+         at all as the object does. Anything gradual (a sphere, a slanted face)
+         has to fall back to the chain, which re-links every frame.          */
+      let gradual=0;
+      for(let x=1;x<W;x++)
+        if(Math.abs(zbuf[base+x]-zbuf[base+x-1])<=0.06&&Math.abs(sepr[x]-sepr[x-1])>0.25){gradual=1;break;}
+
+      if(S.statictex&&!gradual){
+        /* phi(x) = x + (p-s)*floor(x/s), with s snapped to an integer.
+           phi(x+s) - phi(x) = s + (p-s) = p exactly, and phi depends on x only:
+           integer throughout, so no resampling and no temporal change.      */
+        for(let c=0;c<W;c++){
+          if(zbuf[base+c]<=0)continue;
+          const sq=Math.round(sepr[c])||1;
+          phi[c]=c+(p-sq)*Math.floor(c/sq);
+          covTot++;
+          const cr=c+sq,cl=c-sq;
+          if((cr<W&&zbuf[base+cr]>0&&Math.abs(sepr[cr]-sepr[c])<0.25)||
+             (cl>=0&&zbuf[base+cl]>0&&Math.abs(sepr[cl]-sepr[c])<0.25))covPairs++;
+          psrc[c]=(cl>=0&&zbuf[base+cl]>0)?cl:-1;
+        }
+      } else {
+        for(let c=0;c<W;c++){
+          if(zbuf[base+c]<=0)continue;
+          covTot++;
+          const s0=psrc[c];
+          if(s0>=0){covPairs++; phi[c]=phi[s0]+p+pfrac[c]*(p/sepr[c]);}
+          else phi[c]=c;               /* new material, native grain, no stretch */
+        }
+      }
+    }
+
+    const ny=(y+scroll)&511;
+    let o=base*4;
+    for(let x=0;x<W;x++){
+      let u=(phi[x]+dacc)%p; if(u<0)u+=p;
+      const u0=u|0,fr=u-u0,u1=u0+1===p?0:u0+1;
+      /* the object carries its own noise field. Same statistics, same period,
+         uncorrelated with the wall - so the silhouette becomes a texture
+         discontinuity instead of a stretched continuation of the wallpaper,
+         which is what made it read as a bulge in the wall rather than a
+         separate thing in front of it.                                     */
+      const NS=(S.owntex&&zbuf[base+x]>0)?noiseB:noise;
+      const n0=NS[u0*512+ny]*3,n1=NS[u1*512+ny]*3;
+      let R=lut[n0]+(lut[n1]-lut[n0])*fr,
+          G=lut[n0+1]+(lut[n1+1]-lut[n0+1])*fr,
+          B=lut[n0+2]+(lut[n1+2]-lut[n0+2])*fr;
+    if(tint>0){const zc=zbuf[base+x];
+        if(zc>0){const c=rgbFromHSL(198+zc*130,.8,.55),k=tint*.55;
+          R+=(c[0]-R)*k;G+=(c[1]-G)*k;B+=(c[2]-B)*k;}}
+      if(S.seam&&S.lock&&zbuf[base+x]>0&&psrc[x]<0){R=198;G=52;B=44;}
+      d[o]=R;d[o+1]=G;d[o+2]=B;d[o+3]=255;o+=4;
+    }
+  }
+  for(let i=0;i<W*H;i++){const o=i*4;curLum[i]=d[o]*.299+d[o+1]*.587+d[o+2]*.114;}
+
+  /* leak meter: do pixels crossing the silhouette change more than the wall? */
+  let nW=0,sW=0,nX=0,sX=0;
+  if(prevOK&&fresh)for(let i=0;i<W*H;i++){
+    const m=zbuf[i]>0?1:0, dv=Math.abs(curLum[i]-prevLum[i]);
+    if(m!==prevMask[i]){nX++;sX+=dv;} else if(!m){nW++;sW+=dv;}
+  }
+
+  /* Coherence meter. The leak meter above only weighs how MUCH each pixel
+     changes, which is blind to whether the change is trackable. A uniform drift
+     passes it at 1.00x and still gives the eye a flow field for the silhouette
+     to stand out against. This measures the thing that actually matters: the
+     largest frame-to-frame cross-correlation of the wall over any horizontal
+     shift. Scintillation reads a couple of percent; any drift or any held frame
+     reads near 100 at the shift that matches it.                            */
+  if(prevOK&&fresh){
+    let best=0,bestD=0;
+    for(let dsh=-20;dsh<=20;dsh++){
+      let n=0,sa=0,sb=0,saa=0,sbb=0,sab=0;
+      for(let y=14;y<H-14;y+=10){const b2=y*W;
+        for(let x=24;x<W-24;x+=5){
+          const j=x+dsh; if(j<0||j>=W)continue;
+          if(zbuf[b2+x]>0||zbuf[b2+j]>0||prevMask[b2+x]||prevMask[b2+j])continue;
+          const A=prevLum[b2+x],B=curLum[b2+j];
+          n++;sa+=A;sb+=B;saa+=A*A;sbb+=B*B;sab+=A*B;
+        }}
+      if(n<900)continue;
+      const den=Math.sqrt((n*saa-sa*sa)*(n*sbb-sb*sb));
+      if(den<=0)continue;
+      const r=Math.abs((n*sab-sa*sb)/den);
+      if(r>best){best=r;bestD=dsh;}
+    }
+    /* decayed maximum, so a single held frame in a run still shows up */
+    if(best>=cohHold){cohHold=best;cohD=bestD;} else cohHold=cohHold*0.90+best*0.10;
+  }
+  el('ro-coh').textContent=prevOK
+    ? Math.round(100*cohHold)+'%'+(cohHold>0.25?' @ '+(cohD>0?'+':'')+cohD+' px':'')
+    : '—';
+
+  if(fresh){
+    for(let i=0;i<W*H;i++){prevLum[i]=curLum[i];prevMask[i]=zbuf[i]>0?1:0;}
+    prevOK=1; lastTick=tick;
+  }
+  /* smoothed over frames: a hold of 2 alternates a frozen wall with a fresh one,
+     and a single-frame ratio would read 1.00 on every other frame and miss it. */
+  const le=el('ro-leak');
+  if(!fresh){ /* repeated frame: hold the last reading rather than blanking it */ }
+  else if(nW>500&&nX>500){
+    const mW=sW/nW, mX=sX/nX;
+    lkW=lkW<0?mW:lkW*0.88+mW*0.12;
+    lkX=lkX<0?mX:lkX*0.88+mX*0.12;
+    if(lkW<0.5)le.textContent='inf (wall frozen)';
+    else{const lk=lkX/lkW; le.textContent=(lk>99?'>99':lk.toFixed(2))+'x';}
+  } else le.textContent='—';
+
+  vx.fillStyle='#000';vx.fillRect(0,0,W,TOP);
+  vx.putImageData(img,0,TOP);
+  vx.fillStyle='#fff';
+  vx.beginPath();vx.arc(W/2-p/2,TOP/2,3,0,6.284);vx.arc(W/2+p/2,TOP/2,3,0,6.284);vx.fill();
+  ribbon();
+  drawDepth(dmIn,(i)=>zbuf[i]);
+  let mr=0;for(let y=0;y<H;y++)if(driftRaw[y]>mr)mr=driftRaw[y];
+  const sMin=E*(1-mu)/(2-mu),sep=z=>E*(1-mu*z)/(2-mu*z);
+  const sGap=sep(gapZ()),sUseFar=sep(usedLo),sUseNear=sep(usedHi);
+  el('ro-draw').textContent=mr.toFixed(1)+' px';
+  el('ro-dfix').textContent=(S.lock?0:mr).toFixed(1)+' px';
+  el('ro-p').textContent=p+' px';
+  el('ro-s').textContent=sMin.toFixed(0)+'–'+p+' px';
+  el('ro-cov').textContent=covTot?Math.round(100*covPairs/covTot)+'%':'—';
+  if(rate>0){
+    const stepDeg=360/(S.rpm*rate);
+    const sym=S.shape==='prop'?8:(S.shape==='cube'?4:1);
+    const limit=180/sym;
+    el('ro-step').textContent=stepDeg.toFixed(1)+'\u00b0'+(stepDeg>limit?' > '+limit.toFixed(1)+'\u00b0 alias':'');
+  } else el('ro-step').textContent='—';
+  el('ro-gap').textContent=(p-sUseFar).toFixed(0)+' px';
+  el('ro-rel').textContent=(sGap-sMin).toFixed(0)+' px avail, '+(sUseFar-sUseNear).toFixed(0)+' in use';
+  el('ro-lv').textContent=q?(p-Math.round(sMin))+'':'continuous';
+}
+
+const dW=190,dH=99;
+function drawDepth(ctx,get){
+  const im=ctx.createImageData(dW,dH),o=im.data;
+  for(let y=0;y<dH;y++)for(let x=0;x<dW;x++){
+    const sxp=Math.round(x*(W-1)/(dW-1)),syp=Math.round(y*(H-1)/(dH-1));
+    const v=get(syp*W+sxp),g=v>0?Math.round(40+215*Math.min(1,v)):16,i=(y*dW+x)*4;
+    o[i]=g;o[i+1]=g;o[i+2]=g;o[i+3]=255;}
+  ctx.putImageData(im,0,0);
+}
+
+/* ── decode: recover separation from the finished frame ─────────── */
+function decode(){
+  const p=S.per,E=2*p,mu=S.mu;
+  const sMin=Math.max(4,Math.floor(E*(1-mu)/(2-mu))-2),sMax=p+2;
+  const luma=new Float32Array(W*H),src=vx.getImageData(0,TOP,W,H).data;
+  for(let i=0,j=0;i<W*H;i++,j+=4)luma[i]=src[j]*.299+src[j+1]*.587+src[j+2]*.114;
+  const rec=new Float32Array(W*H),ok=new Uint8Array(W*H);
+  const win=9,err=new Float64Array(sMax+2);
+  for(let y=0;y<H;y+=2){
+    const base=y*W;
+    for(let x=win;x<W-sMax-win;x+=2){
+      let bestS=p,bestE=1e18;
+      for(let s=sMin;s<=sMax;s++){
+        let e=0;
+        for(let k=-win;k<=win;k++){const dv=luma[base+x+k]-luma[base+x+s+k];e+=dv*dv;}
+        err[s]=e; if(e<bestE){bestE=e;bestS=s;}
+      }
+      let sf=bestS;                                     // parabolic sub-pixel refine
+      if(bestS>sMin&&bestS<sMax){const a=err[bestS-1],b=err[bestS],c=err[bestS+1],den=a-2*b+c;
+        if(den>0)sf=bestS+0.5*(a-c)/den;}
+      const z=(2*sf-E)/(mu*(sf-E));
+      const v=Math.max(0,Math.min(1,z));
+      /* a window straddling a depth step has no single disparity: exclude from the score */
+      let flat=1,z0=zbuf[base+x];
+      for(let k=-win;k<=win;k++)if(Math.abs(zbuf[base+x+k]-z0)>0.10){flat=0;break;}
+      for(const dyy of [0,1]){if(y+dyy>=H)continue;const bb=base+dyy*W;
+        rec[bb+x]=v;rec[bb+x+1]=v;ok[bb+x]=flat;ok[bb+x+1]=flat;}
+    }
+  }
+  drawDepth(dmOut,(i)=>rec[i]);
+  /* correlation between input and recovered, over object columns only */
+  let n=0,sa=0,sb=0,saa=0,sbb=0,sab=0,skipped=0;
+  for(let y=0;y<H;y+=2)for(let x=win;x<W-sMax-win;x+=2){
+    if(!ok[y*W+x]){skipped++;continue;}
+    const a=zbuf[y*W+x],b=rec[y*W+x];
+    n++;sa+=a;sb+=b;saa+=a*a;sbb+=b*b;sab+=a*b;}
+  const num=n*sab-sa*sb,den=Math.sqrt((n*saa-sa*sa)*(n*sbb-sb*sb));
+  const r=den>0?num/den:0;
+  el('dec-stat').innerHTML='Match <b>'+r.toFixed(2)+'</b> over '+n.toLocaleString()+
+    ' samples, '+skipped.toLocaleString()+' skipped on depth edges. Flat planes top out near 0.88 '+
+    'with this window; a slanted solid reads lower, so compare the two pictures rather than the number.';
+}
+
+function ribbon(){
+  const HH=H+TOP;
+  dx.fillStyle='#FAFCFC';dx.fillRect(0,0,88,HH);
+  dx.strokeStyle='#E6EDEE';dx.lineWidth=1;
+  for(let g=0;g<=3;g++){const gx=12+g*22;dx.beginPath();dx.moveTo(gx,TOP);dx.lineTo(gx,HH-8);dx.stroke();}
+  dx.strokeStyle='#B33227';dx.lineWidth=1.4;dx.beginPath();
+  for(let y=0;y<H;y++){const X=12+Math.min(1,Math.max(0,driftRaw[y])/50)*66;y?dx.lineTo(X,y+TOP):dx.moveTo(X,y+TOP);}
+  dx.stroke();
+  dx.strokeStyle='#0C6C7C';dx.lineWidth=2;dx.beginPath();dx.moveTo(12,TOP);dx.lineTo(12,HH-8);dx.stroke();
+  dx.font='500 9px "IBM Plex Mono",monospace';dx.fillStyle='#5D7278';
+  dx.fillText('0',9,HH-1);dx.fillText('50px',62,HH-1);
+}
+
+let t=0,last=performance.now(),booted=0;
+const redraw=()=>{if(booted&&!S.play)frame(t);};
+const bind=(id,key,fmt,scale)=>{const e=el(id);const upd=()=>{
+  S[key]=e.type==='checkbox'?(e.checked?1:0):(scale?scale(+e.value):+e.value);
+  if(fmt)el('v-'+id.slice(2)).textContent=fmt(+e.value);redraw();};
+  e.addEventListener('input',upd);upd();};
+bind('c-statictex','statictex');bind('c-owntex','owntex');bind('c-lock','lock');bind('c-seam','seam');bind('c-color','color');bind('c-quant','quant');
+bind('c-rate','rate',v=>v?v+' Hz':'frozen');bind('c-drift','drift',v=>v?v+' px/frame':'off');bind('c-hold','hold',v=>v===0?'frozen':(v===1?'every frame':'every '+v+' frames'));bind('c-scroll','scroll',v=>v?v+' px/s':'off');bind('c-hue','hue',v=>v?v+' °/s':'off');
+bind('c-tint','tint',v=>v+' %');bind('c-rpm','rpm',v=>v+' s');
+bind('c-depth','mu',v=>(v/100).toFixed(2),v=>v/100);
+bind('c-gap','gap',v=>v+' px');
+el('c-per').addEventListener('change',e=>{S.per=+e.target.value;redraw();});
+const PRESET={prop:{mu:70,gap:18},ball:{mu:70,gap:9},whale:{mu:70,gap:7},wedge:{mu:70,gap:6},cube:{mu:70,gap:7}};
+el('c-shape').addEventListener('change',e=>{
+  S.shape=e.target.value;
+  const q=PRESET[S.shape];
+  if(q){const A=el('c-depth'),B=el('c-gap');A.value=q.mu;B.value=q.gap;
+    A.dispatchEvent(new Event('input'));B.dispatchEvent(new Event('input'));}
+  redraw();});
+el('btn-dec').addEventListener('click',()=>{S.play=0;
+  el('btn-play').textContent='Play';el('btn-play').setAttribute('aria-pressed','false');
+  el('dec-stat').textContent='Decoding…';
+  setTimeout(decode,30);});
+
+if(matchMedia('(prefers-reduced-motion:reduce)').matches){S.play=0;
+  el('btn-play').textContent='Play';el('btn-play').setAttribute('aria-pressed','false');}
+el('btn-play').addEventListener('click',e=>{S.play^=1;e.target.textContent=S.play?'Pause':'Play';
+  e.target.setAttribute('aria-pressed',S.play?'true':'false');});
+el('btn-step').addEventListener('click',()=>{t+=1/(24*S.rpm);frame(t);});
+function loop(now){const dt=(now-last)/1000;last=now;if(S.play){t+=dt/S.rpm;frame(t);}requestAnimationFrame(loop);}
+buildNoise(0);frame(0);booted=1;requestAnimationFrame(loop);
+})();
+
+</script>
+</body>
+</html>
