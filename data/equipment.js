@@ -35,7 +35,7 @@ const EQUIPMENT_DATA = {
         "es": [
           "Líneas láser: 405 nm, 488 nm, 561 nm, 633 nm",
           "Rango espectral de detección: 450-740 nm",
-          "Objetivos: 10X/0.5 (dry) 20X/0.75 (dry) 40X/ 1.3 (oil) 60X/ 1.2 (water) 60X/1.4 (oil) 100X/ 1.45 (oil)",
+          "Objetivos: 10X/0.5 (seco), 20X/0.75 (seco), 40X/ 1.3 (aceite), 60X/ 1.2 (agua), 60X/1.4 (aceite), 100X/ 1.45 (aceite)",
           "Detectores: 4 Fotomultiplicadores, 1 Detector de luz transmitida, 1 Detector espectral de 32 canales",
           "Modalidades: Curso temporal, stitching, reconstrucción 3D y sus combinaciones. A solicitud del usuario se puede incluir el stage top incubator (platina térmica) para visualización de muestras vivas (los consumibles deben ser proporcionados por el usuario).",
           "Aplicaciones: Adquisición de imágenes en fluorescencia y campo claro. Adquisición de imágenes de muestras vivas, FRET, FRAP."
@@ -71,18 +71,18 @@ const EQUIPMENT_DATA = {
         "es": [
           "Líneas láser: 405 nm, 445 nm, 488 nm, 514 nm, 561 nm, 631 nm",
           "Rango espectral de detección: 450-740 nm",
-          "Objetivos: 4X/0.2 (seco), 10X/0.45 (seco), 20X/0.8 (seco), 60X/1.42 (aceite), 100X/1.45 (aceite).",
+          "Objetivos: 4X/0.2 (seco), 10X/0.45 (seco), 20X/0.8 (seco), 60X/1.42 (aceite), 100X/1.45 (aceite)",
           "Detectores: 4 Fotomultiplicadores, 1 Detector de luz transmitida, 1 Cámara monocromática Hamamatsu ORCA Flash 4.0",
-          "Modalidades: Curso temporal, stitching, reconstrucción 3D y sus combinaciones. A solicitud del usuario se puede incluir el stage top incubator (platina térmica) para visualización de muestras vivas (los consumibles deben ser proporcionados por el usuario).",
-          "Aplicaciones: Adquisición de imágenes en fluorescencia y campo claro. Adquisición de imágenes de muestras vivas, FRET, FRAP, adquisición súper resuelta."
+          "Modalidades: Curso temporal, stitching, reconstrucción 3D y sus combinaciones. A solicitud del usuario se puede incluir el stage top incubator (platina térmica) para visualización de muestras vivas (los consumibles deben ser proporcionados por el usuario)",
+          "Aplicaciones: Adquisición de imágenes en fluorescencia y campo claro. Adquisición de imágenes de muestras vivas, FRET, FRAP, adquisición súper resuelta"
         ],
         "en": [
           "Laser lines: 405 nm, 445 nm, 488 nm, 514 nm, 561 nm, 631 nm",
           "Spectral detection range: 450-740 nm",
-          "Objectives: 4X/0.2 (dry), 10X/0.45 (dry), 20X/0.8 (dry), 60X/1.42 (oil), 100X/1.45 (oil).",
+          "Objectives: 4X/0.2 (dry), 10X/0.45 (dry), 20X/0.8 (dry), 60X/1.42 (oil), 100X/1.45 (oil)",
           "Detectors: 4 Photomultipliers, 1 Transmitted light detector, 1 Hamamatsu ORCA Flash 4.0",
-          "Modalities: Time-lapse, stitching, 3D reconstruction, and their combinations. Upon user request, a stage top incubator can be included for live sample imaging (consumables must be provided by the user).",
-          "Applications: Fluorescence and brightfield image acquisition. Live-cell imaging, FRET, FRAP, superresolved imaging."
+          "Modalities: Time-lapse, stitching, 3D reconstruction, and their combinations. Upon user request, a stage top incubator can be included for live sample imaging (consumables must be provided by the user)",
+          "Applications: Fluorescence and brightfield image acquisition. Live-cell imaging, FRET, FRAP, superresolved imaging"
         ]
       }
     },
