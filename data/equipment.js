@@ -15,42 +15,6 @@ const EQUIPMENT_DATA = {
   },
   "items": [
     {
-      "id": "confocal-nikon-a1",
-      "category": "microscopy",
-      "name": {
-        "es": "(Se va pronto) Confocal Nikon A1",
-        "en": "(Going soon) Nikon A1 confocal"
-      },
-      "image": "assets/images/equipment/confocal-nikon-a1.jpg",
-      "popupImage": "assets/images/equipment/popup-confocal-nikon-a1.jpg",
-      "shortDescription": {
-        "es": "Microscopio confocal de barrido láser.",
-        "en": "Confocal laser scanning microscope."
-      },
-      "fullDescription": {
-        "es": "El confocal Nikon A1 permite la investigación avanzada de muestras vivas y fijadas.",
-        "en": "The Nikon A1 confocal microscope enables advanced research on both live and fixed samples."
-      },
-      "specs": {
-        "es": [
-          "Líneas láser: 405 nm, 488 nm, 561 nm, 633 nm",
-          "Rango espectral de detección: 450-740 nm",
-          "Objetivos: 10X/0.5 (seco), 20X/0.75 (seco), 40X/ 1.3 (aceite), 60X/ 1.2 (agua), 60X/1.4 (aceite), 100X/ 1.45 (aceite)",
-          "Detectores: 4 Fotomultiplicadores, 1 Detector de luz transmitida, 1 Detector espectral de 32 canales",
-          "Modalidades: Curso temporal, stitching, reconstrucción 3D y sus combinaciones. A solicitud del usuario se puede incluir el stage top incubator (platina térmica) para visualización de muestras vivas (los consumibles deben ser proporcionados por el usuario).",
-          "Aplicaciones: Adquisición de imágenes en fluorescencia y campo claro. Adquisición de imágenes de muestras vivas, FRET, FRAP."
-        ],
-        "en": [
-          "Laser lines: 405 nm, 488 nm, 561 nm, 633 nm",
-          "Spectral detection range: 450-740 nm",
-          "Objectives: 10X/0.5 (dry), 20X/0.75 (dry), 40X/1.3 (oil), 60X/1.2 (water), 60X/1.4 (oil), 100X/1.45 (oil)",
-          "Detectors: 4 Photomultipliers, 1 Transmitted light detector, 1 32-channel spectral detector",
-          "Modalities: Time-lapse, stitching, 3D reconstruction, and their combinations. Upon user request, a stage top incubator can be included for live sample imaging (consumables must be provided by the user).",
-          "Applications: Fluorescence and brightfield image acquisition. Live-cell imaging, FRET, FRAP."
-        ]
-      }
-    },
-    {
       "id": "equip-ce655wxm",
       "category": "microscopy",
       "name": {
